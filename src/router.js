@@ -7,6 +7,7 @@ import Institutional from './views/pages/Institutional.vue'
 import Partners from './views/pages/Partners.vue'
 import Login from './views/pages/Login.vue'
 import ComingSoon from './views/pages/ComingSoon.vue'
+import Event from './views/pages/Events.vue'
 import PrivateClasses from './views/product-pages/PrivateClasses.vue'
 
 Vue.use(Router)
@@ -49,6 +50,11 @@ export default new Router({
       path: '/comingsoon',
       name: 'under-construction',
       component: ComingSoon
+    },
+    {
+      path: '/events',
+      name: 'event',
+      component: Event
     },
     {
       path: '/products/private-classes',
