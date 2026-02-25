@@ -34,10 +34,10 @@
         </v-list-item>
 
         <v-card-actions>
-          <v-btn text :to="card.action1.link">
+          <v-btn text :to="getRouterLink(card.action1)">
             {{ card.action1.name() }}
           </v-btn>
-          <v-btn text :color="!card.buttonCollor ? '' : card.buttonCollor" :to="card.action2.link">
+          <v-btn text :color="!card.buttonCollor ? '' : card.buttonCollor" :to="getRouterLink(card.action2)">
             {{ card.action2.name() }}
           </v-btn>
         </v-card-actions>
@@ -88,7 +88,10 @@ export default {
           },
           action2: {
             name: () => this.getTextFromI18n("$vuetify.cards.services.action2"),
-            link: "/services/hire"
+            link: {
+              path: "/formulario",
+              query: { tipo: "particular" }
+            }
           },
           buttonCollor: "purple",
         },
@@ -99,6 +102,12 @@ export default {
     getTextFromI18n: function (elementName) {
       return this.$vuetify.lang.t(elementName);
     },
+    getRouterLink(action) {
+      if (typeof action.link === 'object') {
+        return action.link;
+      }
+      return { path: action.link };
+    }
   },
 };
 </script>

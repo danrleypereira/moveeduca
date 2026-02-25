@@ -103,7 +103,10 @@ export default {
           action1: {
             name: () =>
               this.getTextFromI18n("$vuetify.projects.privateClass.action1"),
-            path: "/comingsoon",
+            path: {
+              path: "/formulario",
+              query: { tipo: "particular" }
+            },
           },
           action2: {
             name: () =>
