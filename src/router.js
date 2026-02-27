@@ -59,7 +59,7 @@ export default new Router({
     {
       path: '/formulario',
       name: 'formulario',
-      component: Formulario 
+      component: Formulario
     }
   ],
   // Vue-router documentation
