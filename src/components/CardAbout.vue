@@ -64,7 +64,7 @@
               'subtitle-1': $vuetify.breakpoint.smAndDown,
             }"
             text
-            :to="project.action1.path"
+            :to="getRouterLink(project.action1)"
           >
             {{ project.action1.name() }}
           </v-btn>
@@ -82,5 +82,13 @@
 export default {
   props: ["project"],
   data: () => ({}),
+  methods: {
+    getRouterLink(action) {
+      if (typeof action.path === 'object') {
+        return action.path;
+      }
+      return { path: action.path };
+    }
+  }
 };
 </script>

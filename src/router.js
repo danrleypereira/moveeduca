@@ -8,6 +8,7 @@ import Partners from './views/pages/Partners.vue'
 import Login from './views/pages/Login.vue'
 import ComingSoon from './views/pages/ComingSoon.vue'
 import PrivateClasses from './views/product-pages/PrivateClasses.vue'
+import Formulario from './views/pages/Formulario.vue'
 
 Vue.use(Router)
 
@@ -54,6 +55,11 @@ export default new Router({
       path: '/products/private-classes',
       name: 'private-classes',
       component: PrivateClasses
+    },
+    {
+      path: '/formulario',
+      name: 'formulario',
+      component: Formulario
     }
   ],
   // Vue-router documentation

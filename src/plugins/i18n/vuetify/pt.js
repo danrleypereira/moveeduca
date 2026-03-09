@@ -206,6 +206,32 @@ export default {
       action1: "Participar",
       action2: "Saiba Mais",
     },
+    formulario: {
+      mover: {
+        title: "Formulário - Projeto Mover",
+        fields: {
+          nome: "Nome completo do voluntário",
+          areaInteresse: "Área de interesse",
+          motivo: "Por que quer participar?",
+          botao: "Enviar"
+        }
+      },
+      particular: {
+        title: "Formulário - Aula Particular",
+        fields: {
+          nome: "Nome completo do aluno",
+          idade: "Idade",
+          materia: "Matéria desejada",
+          materias: ["Matemática", "Português", "Física"],
+          botao: "Solicitar Aula"
+        }
+      },
+      erro: {
+        titulo: "Escolha uma modalidade válida",
+        instrucoes: "Você precisa acessar com uma URL válida, como:",
+        exemplos: ["/formulario?tipo=mover", "/formulario?tipo=particular"]
+      }
+    },
   },
   organanizationPage: {
     head: "Nossa Organização",
