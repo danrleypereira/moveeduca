@@ -5,13 +5,8 @@
       class="d-flex flex-column flex-md-row flex-lg-row flex-xl-row"
     >
       <v-flex xs12 md7 lg7>
-      </v-flex>
-      <v-flex xs12 md5 lg5 flex-column secondary>
-      </v-flex>
-    </v-container>
-
-    <v-container>
-      <v-card class="pa-4">
+        <v-container>
+          <v-card class="pa-4">
 
         <!-- Título -->
         <h2 v-if="tipo === 'mover'">
@@ -53,7 +48,7 @@
           />
           <v-select
             :label="getTextFromI18n('$vuetify.projects.formulario.particular.fields.materia')"
-            :items="['Matemática', 'Português', 'Física']"
+            :items="materias"
           />
           <v-btn color="primary">
             {{ getTextFromI18n('$vuetify.projects.formulario.particular.fields.botao') }}
@@ -72,16 +67,28 @@
         </div>
 
       </v-card>
+      </v-container>
+      </v-flex>
+      <v-flex xs12 md5 lg5 secondary class="scribble-background">
+        <Aside />
+      </v-flex>
     </v-container>
-
   </v-container>
 </template>
 
 <script>
+import Aside from "../../components/Aside";
+
 export default {
+  components: {
+    Aside,
+  },
   computed: {
     tipo() {
       return this.$route.query.tipo;
+    },
+    materias() {
+      return this.$vuetify.lang.locales.pt.projects.formulario.particular.fields.materias;
     }
   },
   methods: {

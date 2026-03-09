@@ -223,6 +223,7 @@ export default {
           nome: "Full name of student",
           idade: "Age",
           materia: "Desired subject",
+          materias: ["Mathematics", "Portuguese", "Physics"],
           botao: "Request Class"
         }
       },

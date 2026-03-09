@@ -222,6 +222,7 @@ export default {
           nome: "Nome completo do aluno",
           idade: "Idade",
           materia: "Matéria desejada",
+          materias: ["Matemática", "Português", "Física"],
           botao: "Solicitar Aula"
         }
       },
