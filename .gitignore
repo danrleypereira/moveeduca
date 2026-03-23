@@ -3,7 +3,9 @@
 website/node_modules/
 website/dist/
 website/functions/ui-debug.log
-
+**/functions/sendgrid.env
+**/*.env
+*.env
 # local env files
 website/.env.local
 website/.env.*.local
