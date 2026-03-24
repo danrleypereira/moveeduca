@@ -68,13 +68,16 @@ export default {
           img: require("../assets/family.svg"),
           action1: {
             name: () => this.getTextFromI18n("$vuetify.cards.aid.action1"),
-            link: "/aid/needy-families"
+            link: {
+              path: "/formulario",
+              query: { tipo: "familia" }
+            }
           },
           action2: {
             name: () => this.getTextFromI18n("$vuetify.cards.aid.action2"),
-            link: "/contact"
+            link: "/aid/needy-families-details"
           },
-          buttonCollor: false,
+          buttonCollor: "purple",
         },
         {
           topic: () => this.getTextFromI18n("$vuetify.cards.services.topic"),
@@ -84,14 +87,14 @@ export default {
           img: require("../assets/teacher3.svg"),
           action1: {
             name: () => this.getTextFromI18n("$vuetify.cards.services.action1"),
-            link: "/products/private-classes"
-          },
-          action2: {
-            name: () => this.getTextFromI18n("$vuetify.cards.services.action2"),
             link: {
               path: "/formulario",
               query: { tipo: "particular" }
             }
+          },
+          action2: {
+            name: () => this.getTextFromI18n("$vuetify.cards.services.action2"),
+            link: "/products/private-classes-details"
           },
           buttonCollor: "purple",
         },

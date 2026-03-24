@@ -70,15 +70,15 @@ export default {
       topic: "Assistência",
       title: "Famílias Carentes",
       description: "Seja uma das famílias que nós apoiamos.",
-      action1: "Regulamento",
-      action2: "Contato",
+      action1: "Solicitar Apoio",
+      action2: "Ver Detalhes",
     },
     services: {
       topic: "Serviços",
       title: "Aula particular",
       description: "Contrate um dos nossos serviços e nos ajude a ajudar.",
-      action1: "Saiba Mais",
-      action2: "Contratar",
+      action1: "Contratar",
+      action2: "Ver Detalhes",
     },
   },
   footer: {
@@ -226,12 +226,59 @@ export default {
           botao: "Solicitar Aula"
         }
       },
+      familia: {
+        title: "Formulário - Família Carente",
+        description: "Preencha este formulário para solicitar apoio para sua família. Nossa equipe analisará sua solicitação e entrará em contato.",
+        fields: {
+          nomeResponsavel: "Nome do responsável",
+          cpf: "CPF do responsável",
+          telefone: "Telefone de contato",
+          email: "E-mail",
+          endereco: "Endereço completo",
+          numFamiliares: "Número de familiares",
+          rendaFamiliar: "Renda familiar mensal",
+          necessidades: "Descreva as necessidades da família",
+          botao: "Solicitar Apoio"
+        },
+        links: {
+          referencias: "Referências:",
+          link1: "Programa Bolsa Família",
+          link2: "CRAS - Centro de Referência de Assistência Social"
+        }
+      },
       erro: {
         titulo: "Escolha uma modalidade válida",
         instrucoes: "Você precisa acessar com uma URL válida, como:",
-        exemplos: ["/formulario?tipo=mover", "/formulario?tipo=particular"]
+        exemplos: ["/formulario?tipo=mover", "/formulario?tipo=particular", "/formulario?tipo=familia"]
       }
     },
+  },
+  aidDetails: {
+    title: "Programa de Apoio a Famílias Carentes",
+    description: "O programa de apoio às famílias carentes da Move&Educa tem como objetivo fornecer suporte a famílias em situação de vulnerabilidade social. Para participar, é necessário atender aos critérios de baixa renda e apresentar a documentação necessária.",
+    requirementsTitle: "Requisitos",
+    req1: "Ter renda familiar mensal de até 1 salário mínimo",
+    req2: "Estar cadastrado em programas sociais do governo (Bolsa Família, CRAS, etc.) ou",
+    req3: "Apresentar comprovante de renda informal",
+    docsTitle: "Documentos necessários",
+    doc1: "CPF do responsável",
+    doc2: "Comprovante de residência",
+    doc3: "Hollerite ou extrato de benefício (para trabalhadores formais ou beneficiários de programas sociais)",
+    doc4: "Cartão do Bolsa Família (se beneficiário)",
+    doc5: "Documento de identificação de todos os membros da família",
+    button: "Solicitar Apoio"
+  },
+  privateClassDetails: {
+    title: "Aulas Particulares",
+    description: "As aulas particulares da Move&Educa são ministradas por universitários voluntários, oferecendo apoio escolar em diversas disciplinas.Nosso objetivo é ajudar alunos de escolas públicas a alcançarem seu potencial máximo acadêmico.",
+    featuresTitle: "Características",
+    feat1: "Aulas personalizadas sesuai necessidade do aluno",
+    feat2: "Professores universitários voluntários",
+    feat3: "Disciplinas: Matemática, Português, Física, Química, etc.",
+    feat4: "Horário flexível mediante disponibilidade",
+    pricingTitle: "Valores",
+    pricing: "Os valores são negociados diretamente com o professor. Uma parte do valor pago pelas aulas é revertida para manter nossos projetos sociais.",
+    button: "Contratar Aula"
   },
   organanizationPage: {
     head: "Nossa Organização",

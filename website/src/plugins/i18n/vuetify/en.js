@@ -68,17 +68,17 @@ export default {
   cards: {
     aid: {
       topic: "Aid",
-      title: "needy families",
+      title: "Needy Families",
       description: "Be one of the families we support.",
-      action1: "Regulation",
-      action2: "Contact",
+      action1: "Request Support",
+      action2: "View Details",
     },
     services: {
       topic: "Services",
       title: "Private class",
       description: "Hire one of our services and help us help.",
-      action1: "Know more",
-      action2: "Hire Us",
+      action1: "Hire",
+      action2: "View Details",
     },
   },
   footer: {
@@ -227,12 +227,59 @@ export default {
           botao: "Request Class"
         }
       },
+      familia: {
+        title: "Form - Needy Family",
+        description: "Fill out this form to request support for your family. Our team will review your request and get in touch.",
+        fields: {
+          nomeResponsavel: "Guardian's name",
+          cpf: "Guardian's CPF",
+          telefone: "Contact phone",
+          email: "E-mail",
+          endereco: "Full address",
+          numFamiliares: "Number of family members",
+          rendaFamiliar: "Monthly family income",
+          necessidades: "Describe the family's needs",
+          botao: "Request Support"
+        },
+        links: {
+          referencias: "References:",
+          link1: "Bolsa Família Program",
+          link2: "CRAS - Social Assistance Reference Center"
+        }
+      },
       erro: {
         titulo: "Choose a valid modality",
         instrucoes: "You must access a valid URL, such as:",
-        exemplos: ["/formulario?tipo=mover", "/formulario?tipo=particular"]
+        exemplos: ["/formulario?tipo=mover", "/formulario?tipo=particular", "/formulario?tipo=familia"]
       }
     },
+  },
+  aidDetails: {
+    title: "Needy Families Support Program",
+    description: "The Move&Educa support program for needy families aims to provide support to families in situations of social vulnerability. To participate, it is necessary to meet the low-income criteria and present the required documentation.",
+    requirementsTitle: "Requirements",
+    req1: "Have a monthly family income of up to 1 minimum wage",
+    req2: "Be registered in government social programs (Bolsa Família, CRAS, etc.) or",
+    req3: "Present proof of informal income",
+    docsTitle: "Required documents",
+    doc1: "Guardian's CPF",
+    doc2: "Proof of residence",
+    doc3: "Pay slip or benefit statement (for formal workers or social program beneficiaries)",
+    doc4: "Bolsa Família card (if beneficiary)",
+    doc5: "Identification document for all family members",
+    button: "Request Support"
+  },
+  privateClassDetails: {
+    title: "Private Classes",
+    description: "The private classes at Move&Educa are taught by volunteer university students, providing school support in various subjects. Our goal is to help public school students reach their maximum academic potential.",
+    featuresTitle: "Features",
+    feat1: "Personalized classes according to student's needs",
+    feat2: "Volunteer university professors",
+    feat3: "Subjects: Mathematics, Portuguese, Physics, Chemistry, etc.",
+    feat4: "Flexible schedule subject to availability",
+    pricingTitle: "Pricing",
+    pricing: "Values are negotiated directly with the professor. Part of the amount paid for classes is used to maintain our social projects.",
+    button: "Hire Class"
   },
   organanizationPage: {
     head: "Our Organization",

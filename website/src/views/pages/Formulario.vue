@@ -24,6 +24,9 @@
         <h2 v-else-if="tipo === 'particular'">
           {{ getTextFromI18n('$vuetify.projects.formulario.particular.title') }}
         </h2>
+        <h2 v-else-if="tipo === 'familia'">
+          {{ getTextFromI18n('$vuetify.projects.formulario.familia.title') }}
+        </h2>
         <h2 v-else>
           {{ getTextFromI18n('$vuetify.projects.formulario.erro.titulo') }}
         </h2>
@@ -72,6 +75,66 @@
           </v-btn>
         </v-form>
 
+        <!-- Formulário Família Carente -->
+        <v-form v-else-if="tipo === 'familia'" ref="formFamilia" v-model="validFamilia" lazy-validation>
+          <p class="mb-4">{{ getTextFromI18n('$vuetify.projects.formulario.familia.description') }}</p>
+          
+          <v-text-field
+            v-model="familia.nomeResponsavel"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.nomeResponsavel')"
+            :rules="[v => !!v || 'Nome do responsável é obrigatório']"
+            required
+          />
+          
+          <v-text-field
+            v-model="familia.cpf"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.cpf')"
+            :rules="[v => !!v || 'CPF é obrigatório']"
+            required
+          />
+          
+          <v-text-field
+            v-model="familia.telefone"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.telefone')"
+            :rules="[v => !!v || 'Telefone é obrigatório']"
+            required
+          />
+          
+          <v-text-field
+            v-model="familia.email"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.email')"
+            type="email"
+          />
+          
+          <v-text-field
+            v-model="familia.endereco"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.endereco')"
+            :rules="[v => !!v || 'Endereço é obrigatório']"
+            required
+          />
+          
+          <v-text-field
+            v-model="familia.numFamiliares"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.numFamiliares')"
+            type="number"
+          />
+          
+          <v-text-field
+            v-model="familia.rendaFamiliar"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.rendaFamiliar')"
+          />
+          
+          <v-textarea
+            v-model="familia.necessidades"
+            :label="getTextFromI18n('$vuetify.projects.formulario.familia.fields.necessidades')"
+            rows="3"
+          />
+          
+          <v-btn color="primary" :disabled="!validFamilia" @click="validateFamilia" class="mb-4">
+            {{ getTextFromI18n('$vuetify.projects.formulario.familia.fields.botao') }}
+          </v-btn>
+        </v-form>
+
         <!-- Mensagem de erro -->
         <div v-else>
           <p>{{ getTextFromI18n('$vuetify.projects.formulario.erro.instrucoes') }}</p>
@@ -104,6 +167,7 @@ export default {
     return {
       validMover: true,
       validParticular: true,
+      validFamilia: true,
       mover: {
         nome: '',
         areaInteresse: '',
@@ -113,6 +177,16 @@ export default {
         nome: '',
         idade: '',
         materia: null,
+      },
+      familia: {
+        nomeResponsavel: '',
+        cpf: '',
+        telefone: '',
+        email: '',
+        endereco: '',
+        numFamiliares: '',
+        rendaFamiliar: '',
+        necessidades: '',
       },
       snackbar: false,
       snackText: '',
@@ -163,6 +237,32 @@ export default {
           email: '',
           phone: this.particular.idade,
           subject: `Aula Particular — Matéria: ${this.particular.materia}`,
+        };
+
+        fetch('https://us-central1-moveeduca-org.cloudfunctions.net/sendEmail', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        })
+          .then(response => response.json())
+          .then(data => {
+            this.snackText = data.message;
+          })
+          .catch(error => {
+            // eslint-disable-next-line no-console
+            console.error('Failed to send the email:', error);
+            this.snackText = 'Failed to send the email.';
+          })
+          .finally(() => this.snackbar = true);
+      }
+    },
+    validateFamilia() {
+      if (this.$refs.formFamilia.validate()) {
+        const formData = {
+          name: this.familia.nomeResponsavel,
+          email: this.familia.email,
+          phone: this.familia.telefone,
+          subject: `Família Carente — CPF: ${this.familia.cpf} | Membros: ${this.familia.numFamiliares} | Renda: ${this.familia.rendaFamiliar} | Necessidades: ${this.familia.necessidades}`,
         };
 
         fetch('https://us-central1-moveeduca-org.cloudfunctions.net/sendEmail', {

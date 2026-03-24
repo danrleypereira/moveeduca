@@ -9,6 +9,8 @@ import Login from './views/pages/Login.vue'
 import ComingSoon from './views/pages/ComingSoon.vue'
 import PrivateClasses from './views/product-pages/PrivateClasses.vue'
 import Formulario from './views/pages/Formulario.vue'
+import AidNeedyFamilies from './views/pages/AidNeedyFamilies.vue'
+import PrivateClassDetails from './views/pages/PrivateClassDetails.vue'
 
 Vue.use(Router)
 
@@ -60,6 +62,16 @@ export default new Router({
       path: '/formulario',
       name: 'formulario',
       component: Formulario
+    },
+    {
+      path: '/aid/needy-families-details',
+      name: 'aid-needy-families-details',
+      component: AidNeedyFamilies
+    },
+    {
+      path: '/products/private-classes-details',
+      name: 'private-classes-details',
+      component: PrivateClassDetails
     }
   ],
   // Vue-router documentation
