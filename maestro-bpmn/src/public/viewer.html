@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor BPMN Corporativo</title>
+    <script src="https://cdn.jsdelivr.net/npm/bpmn-visualization@0.47.0/dist/bpmn-visualization.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; overflow: hidden; }
+        #app { display: flex; height: 100vh; }
+
+        /* Sidebar na Esquerda */
+        #sidebar {
+            width: 320px;
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            z-index: 10;
+        }
+
+        h2 { margin: 0; font-size: 1.4rem; color: #0f172a; }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.95rem;
+            outline: none;
+            background: #f8fafc;
+            cursor: pointer;
+        }
+        select:focus { border-color: #2563eb; }
+
+        /* Container do Visualizador na Direita */
+        #bpmn-container {
+            flex-grow: 1;
+            background: #f1f5f9;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <h2>BPMN Viewer</h2>
+            <div class="form-group">
+                <label for="diagram-select">Diagrama</label>
+                <select id="diagram-select">
+                    <option value="">Carregando...</option>
+                </select>
+            </div>
+        </div>
+        <div id="bpmn-container"></div>
+    </div>
+
+    <script>
+        // 1. Inicializa a lib (nota: o nome global mudou para bpmnvisu via CDN)
+        const bpmnVisualization = new bpmnvisu.BpmnVisualization({
+            container: 'bpmn-container',
+            navigation: { enabled: true }
+        });
+
+        const selectEl = document.getElementById('diagram-select');
+
+        // 2. Busca os arquivos do nosso backend Express
+        async function loadDiagramList() {
+            try {
+                const response = await fetch('/api/diagrams');
+                const files = await response.json();
+
+                selectEl.innerHTML = '<option value="">Selecione um diagrama...</option>';
+
+                files.forEach(file => {
+                    const option = document.createElement('option');
+                    option.value = file;
+                    // Tira o .bpmn e os underlines pra ficar bonitão
+                    option.textContent = file.replace('.bpmn', '').replace(/_/g, ' ').toUpperCase();
+                    selectEl.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Erro de API:", error);
+                selectEl.innerHTML = '<option value="">Erro ao carregar do servidor</option>';
+            }
+        }
+
+        // 3. Renderiza quando escolher no drop-down
+        selectEl.addEventListener('change', async (e) => {
+            const fileName = e.target.value;
+            if (!fileName) {
+                bpmnVisualization.graph.clear();
+                return;
+            }
+
+            try {
+                // Puxa o XML da rota estática do Express
+                const response = await fetch(`/bpmn/${fileName}`);
+                const xml = await response.text();
+
+                // Renderiza centralizado
+                bpmnVisualization.load(xml, { fit: { type: 'Center', margin: 40 } });
+            } catch (error) {
+                console.error('Erro ao renderizar:', error);
+                alert('Falha ao processar o diagrama.');
+            }
+        });
+
+        loadDiagramList();
+    </script>
+</body>
+</html>

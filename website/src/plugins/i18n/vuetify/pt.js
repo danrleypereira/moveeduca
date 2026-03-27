@@ -65,6 +65,37 @@ export default {
       resetValidation: "Resetar validações"
     }
   },
+  generalForm: {
+    title: "Entre em contato",
+    certo: "Perfeito",
+    name: {
+      label: "Seu Nome",
+      required: "Seu Nome é obrigatório",
+      notValid: "Nome tem que ser menor que 10 caracteres"
+    },
+    email: {
+      label: "E-mail",
+      required: "Precisamos do seu email",
+      notValid: "Esse email não parece válido"
+    },
+    phone: {
+      label: "Telefone ou Celular",
+      required: "Um telefone brasileiro é necessário",
+      notValid: "O número precisa ter DDD e o mínimo de caracteres"
+    },
+    subject: {
+      label: "Assunto",
+      hint: "Assunto pré-definido pelo projeto selecionado"
+    },
+    agree: {
+      message: "Você concorda que possamos te ligar e/ou mandar email?",
+      required: "Para submeter esse formulário você precisa concordar!"
+    },
+    actions: {
+      submit: "Enviar",
+      cancel: "Cancelar"
+    }
+  },
   cards: {
     aid: {
       topic: "Assistência",

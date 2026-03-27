@@ -153,7 +153,10 @@ export default {
           action1: {
             name: () =>
               this.getTextFromI18n("$vuetify.projects.robotic.action1"),
-            path: "/comingsoon",
+            path: {
+              path: "/formulario",
+              query: { tipo: "robotica" }
+            },
           },
           action2: {
             name: () =>
@@ -172,7 +175,10 @@ export default {
           action1: {
             name: () =>
               this.getTextFromI18n("$vuetify.projects.sicatroli.action1"),
-            path: "/comingsoon",
+            path: {
+              path: "/formulario",
+              query: { tipo: "sicatroli" }
+            },
           },
           action2: {
             name: () =>
@@ -190,7 +196,10 @@ export default {
           },
           action1: {
             name: () => this.getTextFromI18n("$vuetify.projects.mlh.action1"),
-            path: "/comingsoon",
+            path: {
+              path: "/formulario",
+              query: { tipo: "mlh" }
+            },
           },
           action2: {
             name: () => this.getTextFromI18n("$vuetify.projects.mlh.action2"),
@@ -208,7 +217,10 @@ export default {
           action1: {
             name: () =>
               this.getTextFromI18n("$vuetify.projects.coaching.action1"),
-            path: "/comingsoon",
+            path: {
+              path: "/formulario",
+              query: { tipo: "coaching" }
+            },
           },
           action2: {
             name: () =>
@@ -227,7 +239,10 @@ export default {
           action1: {
             name: () =>
               this.getTextFromI18n("$vuetify.projects.graduation.action1"),
-            path: "/comingsoon",
+            path: {
+              path: "/formulario",
+              query: { tipo: "graduation" }
+            },
           },
           action2: {
             name: () =>

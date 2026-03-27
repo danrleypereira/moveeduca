@@ -65,6 +65,37 @@ export default {
       resetValidation: "Reset validations"
     }
   },
+  generalForm: {
+    title: "Contact us",
+    certo: "Perfect",
+    name: {
+      label: "Your Name",
+      required: "Your Name is required",
+      notValid: "Name must be less than 10 characters"
+    },
+    email: {
+      label: "E-mail",
+      required: "We need your email",
+      notValid: "This email doesn't look valid"
+    },
+    phone: {
+      label: "Phone or Cell",
+      required: "A Brazilian phone number is required",
+      notValid: "The number must have area code and minimum characters"
+    },
+    subject: {
+      label: "Subject",
+      hint: "Subject predefined by selected project"
+    },
+    agree: {
+      message: "Do you agree that we can call you and/or send email?",
+      required: "To submit this form you need to agree!"
+    },
+    actions: {
+      submit: "Submit",
+      cancel: "Cancel"
+    }
+  },
   cards: {
     aid: {
       topic: "Aid",
