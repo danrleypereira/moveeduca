@@ -27,6 +27,9 @@ export default {
     writeMail: "Tell us your registered email",
     writePassword: "Write up your password",
   },
+  contactPage: {
+    title: "Contact"
+  },
   contactForm: {
     certo: "Perfect",
     name: {
@@ -55,14 +58,17 @@ export default {
       required: "Tell us the subject please",
       label: "Subject"
     },
+    description: {
+      label: "Description",
+      hint: "Describe additional details about your contact"
+    },
     agree: {
       message: "Do you agree that we can call you and/or send you an email?",
       required: "To submit this form you must agree!"
     },
     actions: {
       submit: "Contact us",
-      resetInputs: "Reset form",
-      resetValidation: "Reset validations"
+      clearForm: "Clear form"
     }
   },
   generalForm: {

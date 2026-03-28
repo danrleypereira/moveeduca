@@ -11,7 +11,7 @@
             </v-btn>
           </template>
         </v-snackbar>
-        <h1>Contact</h1>
+        <h1>{{ this.getTextFromI18n('$vuetify.contactPage.title') }}</h1>
         <v-flex ma-4>
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-text-field v-model="name" :counter="10" :rules="nameRules"
@@ -29,6 +29,10 @@
               :rules="[v => !!v || this.getTextFromI18n('$vuetify.contactForm.item.required')]"
               :label="this.getTextFromI18n('$vuetify.contactForm.item.label')" required></v-select>
 
+            <v-textarea v-model="description"
+              :label="this.getTextFromI18n('$vuetify.contactForm.description.label')"
+              :hint="this.getTextFromI18n('$vuetify.contactForm.description.hint')"></v-textarea>
+
             <v-checkbox v-model="checkbox"
               :rules="[v => !!v || this.getTextFromI18n('$vuetify.contactForm.agree.required')]"
               :label="this.getTextFromI18n('$vuetify.contactForm.agree.message')" required></v-checkbox>
@@ -38,11 +42,7 @@
             </v-btn>
 
             <v-btn color="error" class="mr-4" @click="reset">
-              {{ this.getTextFromI18n('$vuetify.contactForm.actions.resetInputs') }}
-            </v-btn>
-
-            <v-btn color="warning" @click="resetValidation">
-              {{ this.getTextFromI18n('$vuetify.contactForm.actions.resetValidation') }}
+              {{ this.getTextFromI18n('$vuetify.contactForm.actions.clearForm') }}
             </v-btn>
           </v-form>
         </v-flex>
@@ -81,6 +81,7 @@ export default {
       ],
       select: null,
       items: () => this.getItems(),
+      description: '',
       checkbox: false,
       snackbar: false,
       snackText: '',
@@ -92,8 +93,9 @@ export default {
         const formData = {
           name: this.name,
           email: this.email,
-          phone: this.phone, // Make sure to add the phone input in your form
-          subject: this.select
+          phone: this.phone,
+          subject: this.select,
+          description: this.description
         };
 
         fetch('https://us-central1-moveeduca-org.cloudfunctions.net/sendEmail', {
@@ -121,9 +123,6 @@ export default {
     },
     reset() {
       this.$refs.form.reset()
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation()
     },
     getTextFromI18n: function (elementName) {
       return this.$vuetify.lang.t(elementName);

@@ -27,6 +27,9 @@ export default {
     writeMail: "Nos diga o email cadastrado",
     writePassword: "É necessário informar a senha",
   },
+  contactPage: {
+    title: "Contato"
+  },
   contactForm: {
     certo: "Perfeito",
     name: {
@@ -55,14 +58,17 @@ export default {
       required: "Diga-nos o assunto por favor",
       label: "Assunto"
     },
+    description: {
+      label: "Descrição",
+      hint: "Descreva detalhes adicionais sobre seu contato"
+    },
     agree: {
       message: "Você concorda que possamos te ligar e/ou mandar email?",
       required: "Para submeter esse formulário você precisa concordar!"
     },
     actions: {
       submit: "Entre em contato",
-      resetInputs: "Resetar formulário",
-      resetValidation: "Resetar validações"
+      clearForm: "Limpar formulário"
     }
   },
   generalForm: {

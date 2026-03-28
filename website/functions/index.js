@@ -46,7 +46,8 @@ exports.sendEmail = onRequest({secrets: [SGapiKey]}, (request, response) => {
     subject: request.body.subject,
     text: `${request.body.name} wants you to contact through the 
       number ${request.body.phone} to talk about the 
-      subject ${request.body.subject}`,
+      subject ${request.body.subject}
+      ${request.body.description ? `\n\nDescription: ${request.body.description}` : ''}`,
     html: `
       <div style="font-family: Arial, sans-serif; padding: 15px; border: 1px solid #eee; border-radius: 5px;">
         <h2>Contact Request</h2>
@@ -54,6 +55,7 @@ exports.sendEmail = onRequest({secrets: [SGapiKey]}, (request, response) => {
         <p><strong>Email:</strong> ${request.body.email}</p>
         <p><strong>Phone:</strong> ${request.body.phone}</p>
         <p><strong>Subject:</strong> ${request.body.subject}</p>
+        ${request.body.description ? `<p><strong>Description:</strong> ${request.body.description}</p>` : ''}
         <p>They would like to discuss the above subject. Please reach out to them as soon as possible.</p>
       </div>
     `,
