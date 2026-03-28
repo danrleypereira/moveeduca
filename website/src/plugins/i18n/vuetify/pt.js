@@ -35,7 +35,7 @@ export default {
     name: {
       label: "Seu Nome",
       required: "Seu Nome é obrigatório",
-      notValid: "Nome tem que ser menor que 10 caracteres"
+      notValid: "Nome deve ter no máximo 100 caracteres"
     },
     email: {
       required: "Precisamos do seu email",
@@ -60,7 +60,8 @@ export default {
     },
     description: {
       label: "Descrição",
-      hint: "Descreva detalhes adicionais sobre seu contato"
+      hint: "Descreva detalhes adicionais sobre seu contato",
+      tooLong: "A descrição deve ter no máximo 500 caracteres"
     },
     agree: {
       message: "Você concorda que possamos te ligar e/ou mandar email?",
@@ -304,6 +305,10 @@ export default {
     doc4: "Cartão do Bolsa Família (se beneficiário)",
     doc5: "Documento de identificação de todos os membros da família",
     button: "Solicitar Apoio"
+  },
+  privateClassesPage: {
+    title: "Aula Particular",
+    description: "Time pedagógico com formação especializada para lidar com crianças e adolescentes com e sem problemas de aprendizagem"
   },
   privateClassDetails: {
     title: "Aulas Particulares",

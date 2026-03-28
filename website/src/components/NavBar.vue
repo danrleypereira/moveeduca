@@ -68,7 +68,7 @@
                 </span>
               </v-btn>
               <v-btn
-                to="/Login"
+                to="/login"
                 target=""
                 color="white"
                 icon
@@ -131,10 +131,10 @@
           </v-btn>
         </div>
         <div v-if="logged()" class="pa-2">
-          <v-btn block>{{ $vuetify.lang.t("$vuetify.loginSystem.logout") }}</v-btn>
+          <v-btn block @click="logout">{{ $vuetify.lang.t("$vuetify.loginSystem.logout") }}</v-btn>
         </div>
         <div v-else class="pa-2">
-          <v-btn color="primary" to="/Login" block> 
+          <v-btn color="primary" to="/login" block>
             {{ $vuetify.lang.t("$vuetify.loginSystem.login") }}
           </v-btn>
         </div>
@@ -206,6 +206,13 @@ export default {
     },
     getTextFromI18n: function (elementName) {
       return this.$vuetify.lang.t(elementName);
+    },
+    logout: function() {
+      // Implementar lógica de logout
+      // Ex: this.$store.dispatch('logout')
+      console.log('Logout clicked');
+      // Por enquanto, apenas redireciona para a página inicial
+      this.$router.push('/');
     },
   },
 };

@@ -30,6 +30,7 @@
               :label="this.getTextFromI18n('$vuetify.contactForm.item.label')" required></v-select>
 
             <v-textarea v-model="description"
+              :rules="descriptionRules"
               :label="this.getTextFromI18n('$vuetify.contactForm.description.label')"
               :hint="this.getTextFromI18n('$vuetify.contactForm.description.hint')"></v-textarea>
 
@@ -67,7 +68,7 @@ export default {
       name: '',
       nameRules: [
         v => !!v || this.getTextFromI18n('$vuetify.contactForm.name.required'),
-        v => (v && v.length <= 10) || this.getTextFromI18n('$vuetify.contactForm.name.notValid'),
+        v => (v && v.length <= 100) || this.getTextFromI18n('$vuetify.contactForm.name.notValid'),
       ],
       email: '',
       emailRules: [
@@ -82,6 +83,9 @@ export default {
       select: null,
       items: () => this.getItems(),
       description: '',
+      descriptionRules: [
+        v => !v || v.length <= 500 || this.getTextFromI18n('$vuetify.contactForm.description.tooLong'),
+      ],
       checkbox: false,
       snackbar: false,
       snackText: '',
@@ -128,12 +132,13 @@ export default {
       return this.$vuetify.lang.t(elementName);
     },
     getItems: function () {
-      let i = 0;
-      const items = []
-      while (i < Infinity) {
-        let item = this.$vuetify.lang.t(`$vuetify.contactForm.item.items[${i}]`);
-        if (item === `$vuetify.contactForm.item.items[${i++}]`) //item not found
-          break;
+      const items = [];
+      const maxItems = 20; // Limite seguro
+      for (let i = 0; i < maxItems; i++) {
+        const item = this.$vuetify.lang.t(`$vuetify.contactForm.item.items[${i}]`);
+        if (item === `$vuetify.contactForm.item.items[${i}]`) {
+          break; // Item não encontrado
+        }
         items.push(item);
       }
       return items;

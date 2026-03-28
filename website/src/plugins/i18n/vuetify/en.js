@@ -18,7 +18,7 @@ export default {
     logout: "Logout",
     login: "Login",
     signUp: "SignUp",
-    forget: "Forgetted password!",
+    forget: "Forgot password!",
     ok: "Seems right!",
     password: "Password",
     numberOfCharacters: "At least 8 characters",
@@ -35,7 +35,7 @@ export default {
     name: {
       label: "Your Name",
       required: "Your Name is required",
-      notValid: "Name must be less than 10 characters"
+      notValid: "Name must be less than 100 characters"
     },
     email: {
       required: "We need your email",
@@ -60,7 +60,8 @@ export default {
     },
     description: {
       label: "Description",
-      hint: "Describe additional details about your contact"
+      hint: "Describe additional details about your contact",
+      tooLong: "Description must be at most 500 characters"
     },
     agree: {
       message: "Do you agree that we can call you and/or send you an email?",
@@ -305,6 +306,10 @@ export default {
     doc4: "Bolsa Família card (if beneficiary)",
     doc5: "Identification document for all family members",
     button: "Request Support"
+  },
+  privateClassesPage: {
+    title: "Private Classes",
+    description: "Pedagogical team with specialized training to work with children and adolescents with and without learning problems"
   },
   privateClassDetails: {
     title: "Private Classes",

@@ -36,7 +36,7 @@
 <style>
   .slide-img {
   }
-  @media screen and (min-width: 960) {
+  @media screen and (min-width: 960px) {
 
   }
 </style>

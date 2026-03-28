@@ -1,9 +1,19 @@
 <template>
   <div class="dashboard">
-    <h1>Aula Particular</h1>
+    <h1>{{ $vuetify.lang.t('$vuetify.privateClassesPage.title') }}</h1>
     <p>
-        Time pedagógico com formação especializada para lidar com crianças e adolescentes com e sem problema problemas de aprendizagem
+      {{ $vuetify.lang.t('$vuetify.privateClassesPage.description') }}
     </p>
-   
   </div>
 </template>
+
+<script>
+export default {
+  name: 'PrivateClasses',
+  methods: {
+    getTextFromI18n: function (elementName) {
+      return this.$vuetify.lang.t(elementName);
+    },
+  },
+};
+</script>
