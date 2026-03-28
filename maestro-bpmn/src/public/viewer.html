@@ -5,108 +5,497 @@
     <title>Monitor BPMN Corporativo</title>
     <script src="https://cdn.jsdelivr.net/npm/bpmn-visualization@0.47.0/dist/bpmn-visualization.min.js"></script>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; overflow: hidden; }
-        #app { display: flex; height: 100vh; }
+        :root {
+            --bg: #f3f0e8;
+            --panel: rgba(252, 249, 242, 0.96);
+            --panel-strong: #fffdf8;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --line: rgba(148, 163, 184, 0.28);
+            --accent: #b45309;
+            --accent-soft: rgba(180, 83, 9, 0.12);
+            --accent-strong: #92400e;
+            --canvas: radial-gradient(circle at top, #f9f4e6 0%, #efe6d4 48%, #e7dbc7 100%);
+            --shadow: 0 24px 60px rgba(68, 51, 24, 0.12);
+        }
 
-        /* Sidebar na Esquerda */
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(251, 191, 36, 0.18), transparent 28%),
+                linear-gradient(135deg, #f8f3ea 0%, #efe6d5 100%);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+
         #sidebar {
-            width: 320px;
-            background: #ffffff;
-            border-right: 1px solid #e2e8f0;
-            padding: 24px;
+            width: 360px;
+            max-width: 100%;
+            background: var(--panel);
+            backdrop-filter: blur(18px);
+            border-right: 1px solid var(--line);
+            padding: 28px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            gap: 18px;
+            box-shadow: var(--shadow);
             z-index: 10;
         }
 
-        h2 { margin: 0; font-size: 1.4rem; color: #0f172a; }
+        .eyebrow {
+            margin: 0;
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--accent-strong);
+            font-weight: 700;
+        }
+
+        h2 {
+            margin: 4px 0 8px;
+            font-size: 2rem;
+            line-height: 1;
+            color: #111827;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
 
         .form-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 0.85rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        select {
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid transparent;
             font-size: 0.95rem;
             outline: none;
-            background: #f8fafc;
-            cursor: pointer;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background 0.2s ease;
         }
-        select:focus { border-color: #2563eb; }
 
-        /* Container do Visualizador na Direita */
+        input, select {
+            background: var(--panel-strong);
+            border-color: rgba(180, 83, 9, 0.14);
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            border-color: rgba(180, 83, 9, 0.5);
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        button {
+            background: linear-gradient(135deg, #c2410c, #9a3412);
+            color: #fff7ed;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 12px 26px rgba(154, 52, 18, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 30px rgba(154, 52, 18, 0.24);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card {
+            padding: 14px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255, 251, 235, 0.95), rgba(255, 247, 237, 0.9));
+            border: 1px solid rgba(180, 83, 9, 0.12);
+        }
+
+        .stat-card span {
+            display: block;
+            font-size: 0.76rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .stat-card strong {
+            font-size: 1.4rem;
+            color: #111827;
+        }
+
+        .detail-card {
+            padding: 18px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.54);
+            border: 1px solid rgba(180, 83, 9, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .detail-card h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 0.92rem;
+        }
+
+        .detail-row span:first-child { color: var(--muted); }
+        .detail-row span:last-child {
+            text-align: right;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .status {
+            padding: 10px 12px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            color: var(--muted);
+        }
+
+        .status[data-level="active"] {
+            color: var(--accent-strong);
+            background: rgba(255, 247, 237, 0.92);
+            border-color: rgba(180, 83, 9, 0.2);
+        }
+
         #bpmn-container {
             flex-grow: 1;
-            background: #f1f5f9;
+            background: var(--canvas);
             position: relative;
+            overflow: hidden;
+        }
+
+        #bpmn-container::before,
+        #bpmn-container::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        #bpmn-container::before {
+            width: 360px;
+            height: 360px;
+            top: -120px;
+            right: -60px;
+            background: rgba(251, 191, 36, 0.12);
+            filter: blur(4px);
+        }
+
+        #bpmn-container::after {
+            width: 460px;
+            height: 460px;
+            bottom: -220px;
+            left: -120px;
+            background: rgba(217, 119, 6, 0.1);
+        }
+
+        #empty-state {
+            position: absolute;
+            inset: 24px;
+            border: 1px dashed rgba(146, 64, 14, 0.22);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            color: #7c5b28;
+            background: rgba(255, 251, 235, 0.3);
+        }
+
+        .empty-copy {
+            max-width: 420px;
+            animation: fadeUp 0.5s ease;
+        }
+
+        .empty-copy strong {
+            display: block;
+            font-size: 1.35rem;
+            color: #78350f;
+            margin-bottom: 10px;
+        }
+
+        .empty-copy span {
+            line-height: 1.6;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) {
+            body, html { overflow: auto; }
+            #app { flex-direction: column; height: auto; min-height: 100vh; }
+            #sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--line); }
+            #bpmn-container { min-height: 60vh; }
+            #empty-state { inset: 16px; }
         }
     </style>
 </head>
 <body>
     <div id="app">
         <div id="sidebar">
+            <p class="eyebrow">Monitor visual</p>
             <h2>BPMN Viewer</h2>
+            <p class="subtitle">Navegue por fluxos, filtre rapidamente a lista e compartilhe o diagrama atual pelo link da pagina.</p>
+            <div class="stats">
+                <div class="stat-card">
+                    <span>Diagramas</span>
+                    <strong id="diagram-count">0</strong>
+                </div>
+                <div class="stat-card">
+                    <span>Filtro</span>
+                    <strong id="filter-count">0</strong>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="diagram-search">Busca rapida</label>
+                <input id="diagram-search" type="text" placeholder="Ex.: onboarding, faturamento..." autocomplete="off">
+            </div>
             <div class="form-group">
                 <label for="diagram-select">Diagrama</label>
                 <select id="diagram-select">
                     <option value="">Carregando...</option>
                 </select>
             </div>
+            <button id="share-button" type="button">Copiar link do diagrama</button>
+            <div id="status" class="status" data-level="idle">Carregando catalogo de diagramas...</div>
+            <div class="detail-card">
+                <h3>Resumo do arquivo</h3>
+                <div class="detail-row"><span>Arquivo</span><span id="detail-file">Nenhum selecionado</span></div>
+                <div class="detail-row"><span>Titulo</span><span id="detail-title">-</span></div>
+                <div class="detail-row"><span>Ultima escolha</span><span id="detail-last">Aguardando selecao</span></div>
+            </div>
         </div>
-        <div id="bpmn-container"></div>
+        <div id="bpmn-container">
+            <div id="empty-state">
+                <div class="empty-copy">
+                    <strong>Escolha um processo para visualizar</strong>
+                    <span>O painel lateral agora permite buscar diagramas por nome e manter a selecao na URL para abrir o mesmo fluxo depois.</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // 1. Inicializa a lib (nota: o nome global mudou para bpmnvisu via CDN)
         const bpmnVisualization = new bpmnvisu.BpmnVisualization({
             container: 'bpmn-container',
             navigation: { enabled: true }
         });
 
         const selectEl = document.getElementById('diagram-select');
+        const searchEl = document.getElementById('diagram-search');
+        const shareButtonEl = document.getElementById('share-button');
+        const statusEl = document.getElementById('status');
+        const diagramCountEl = document.getElementById('diagram-count');
+        const filterCountEl = document.getElementById('filter-count');
+        const detailFileEl = document.getElementById('detail-file');
+        const detailTitleEl = document.getElementById('detail-title');
+        const detailLastEl = document.getElementById('detail-last');
+        const emptyStateEl = document.getElementById('empty-state');
 
-        // 2. Busca os arquivos do nosso backend Express
-        async function loadDiagramList() {
-            try {
-                const response = await fetch('/api/diagrams');
-                const files = await response.json();
+        let allFiles = [];
 
-                selectEl.innerHTML = '<option value="">Selecione um diagrama...</option>';
-
-                files.forEach(file => {
-                    const option = document.createElement('option');
-                    option.value = file;
-                    // Tira o .bpmn e os underlines pra ficar bonitão
-                    option.textContent = file.replace('.bpmn', '').replace(/_/g, ' ').toUpperCase();
-                    selectEl.appendChild(option);
-                });
-            } catch (error) {
-                console.error("Erro de API:", error);
-                selectEl.innerHTML = '<option value="">Erro ao carregar do servidor</option>';
-            }
+        function formatDiagramTitle(fileName) {
+            return fileName.replace('.bpmn', '').replace(/[_-]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
         }
 
-        // 3. Renderiza quando escolher no drop-down
-        selectEl.addEventListener('change', async (e) => {
-            const fileName = e.target.value;
+        function updateStatus(message, level = 'idle') {
+            statusEl.textContent = message;
+            statusEl.dataset.level = level;
+        }
+
+        function updateDetails(fileName) {
+            if (!fileName) {
+                detailFileEl.textContent = 'Nenhum selecionado';
+                detailTitleEl.textContent = '-';
+                detailLastEl.textContent = 'Aguardando selecao';
+                return;
+            }
+
+            detailFileEl.textContent = fileName;
+            detailTitleEl.textContent = formatDiagramTitle(fileName);
+            detailLastEl.textContent = new Date().toLocaleString('pt-BR');
+        }
+
+        function updateUrl(fileName) {
+            const url = new URL(window.location.href);
+            if (fileName) {
+                url.hash = `diagram=${encodeURIComponent(fileName)}`;
+            } else {
+                url.hash = '';
+            }
+            window.history.replaceState({}, '', url);
+        }
+
+        function getDiagramFromUrl() {
+            const hash = window.location.hash.startsWith('#') ? window.location.hash.slice(1) : window.location.hash;
+            const params = new URLSearchParams(hash);
+            return params.get('diagram');
+        }
+
+        function renderDiagramOptions(files, selectedValue = '') {
+            selectEl.innerHTML = '';
+
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = files.length ? 'Selecione um diagrama...' : 'Nenhum diagrama encontrado';
+            selectEl.appendChild(placeholder);
+
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = formatDiagramTitle(file);
+                option.selected = file === selectedValue;
+                selectEl.appendChild(option);
+            });
+
+            filterCountEl.textContent = String(files.length);
+        }
+
+        function applySearch(selectedFromUrl = '') {
+            const query = searchEl.value.trim().toLowerCase();
+            const filteredFiles = allFiles.filter(file => formatDiagramTitle(file).toLowerCase().includes(query) || file.toLowerCase().includes(query));
+            const nextSelected = filteredFiles.includes(selectedFromUrl) ? selectedFromUrl : '';
+
+            renderDiagramOptions(filteredFiles, nextSelected);
+
+            if (!filteredFiles.length) {
+                updateStatus('Nenhum diagrama corresponde ao filtro informado.', 'idle');
+            } else if (query) {
+                updateStatus(`${filteredFiles.length} diagrama(s) encontrados para "${query}".`, 'active');
+            } else {
+                updateStatus('Catalogo carregado. Escolha um diagrama para renderizar.', 'idle');
+            }
+
+            return filteredFiles;
+        }
+
+        async function renderDiagram(fileName) {
             if (!fileName) {
                 bpmnVisualization.graph.clear();
+                emptyStateEl.hidden = false;
+                updateDetails('');
+                updateUrl('');
+                updateStatus('Nenhum diagrama selecionado.', 'idle');
                 return;
             }
 
             try {
-                // Puxa o XML da rota estática do Express
+                updateStatus(`Carregando ${formatDiagramTitle(fileName)}...`, 'active');
                 const response = await fetch(`/bpmn/${fileName}`);
-                const xml = await response.text();
 
-                // Renderiza centralizado
+                if (!response.ok) {
+                    throw new Error(`Falha HTTP ${response.status}`);
+                }
+
+                const xml = await response.text();
                 bpmnVisualization.load(xml, { fit: { type: 'Center', margin: 40 } });
+                emptyStateEl.hidden = true;
+                updateDetails(fileName);
+                updateUrl(fileName);
+                updateStatus(`Exibindo ${formatDiagramTitle(fileName)}.`, 'active');
             } catch (error) {
                 console.error('Erro ao renderizar:', error);
+                emptyStateEl.hidden = false;
+                updateStatus('Falha ao processar o diagrama selecionado.', 'idle');
                 alert('Falha ao processar o diagrama.');
+            }
+        }
+
+        async function loadDiagramList() {
+            try {
+                const response = await fetch('/api/diagrams');
+                allFiles = await response.json();
+                diagramCountEl.textContent = String(allFiles.length);
+
+                const diagramFromUrl = getDiagramFromUrl();
+                const filteredFiles = applySearch(diagramFromUrl);
+
+                if (diagramFromUrl && filteredFiles.includes(diagramFromUrl)) {
+                    selectEl.value = diagramFromUrl;
+                    await renderDiagram(diagramFromUrl);
+                } else {
+                    updateDetails('');
+                }
+            } catch (error) {
+                console.error("Erro de API:", error);
+                selectEl.innerHTML = '<option value="">Erro ao carregar do servidor</option>';
+                updateStatus('Erro ao carregar catalogo do servidor.', 'idle');
+            }
+        }
+
+        selectEl.addEventListener('change', async (e) => {
+            const fileName = e.target.value;
+            await renderDiagram(fileName);
+        });
+
+        searchEl.addEventListener('input', () => {
+            const currentSelection = selectEl.value;
+            const filteredFiles = applySearch(currentSelection);
+
+            if (currentSelection && !filteredFiles.includes(currentSelection)) {
+                selectEl.value = '';
+                bpmnVisualization.graph.clear();
+                emptyStateEl.hidden = false;
+                updateDetails('');
+                updateUrl('');
+            }
+        });
+
+        shareButtonEl.addEventListener('click', async () => {
+            const selected = selectEl.value;
+            if (!selected) {
+                updateStatus('Selecione um diagrama antes de copiar o link.', 'idle');
+                return;
+            }
+
+            const shareUrl = new URL(window.location.href);
+            shareUrl.hash = `diagram=${encodeURIComponent(selected)}`;
+
+            try {
+                await navigator.clipboard.writeText(shareUrl.toString());
+                updateStatus('Link do diagrama copiado para a area de transferencia.', 'active');
+            } catch (error) {
+                console.error('Erro ao copiar link:', error);
+                updateStatus(`Copie manualmente: ${shareUrl.toString()}`, 'active');
             }
         });
 
