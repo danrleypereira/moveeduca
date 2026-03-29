@@ -33,12 +33,40 @@
   </v-container>
 </template>
 
-<style>
-  .slide-img {
-  }
-  @media screen and (min-width: 960px) {
+<style scoped>
+/* Estilos do componente HelloWorld */
 
+/* Animação de carrossel contínuo */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
   }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Aplica a animação ao slide group */
+v-slide-group >>> .v-slide-group__content {
+  animation: scroll 30s linear infinite;
+  display: flex;
+  gap: 16px;
+}
+
+/* Pausa a animação ao passar o mouse */
+v-slide-group:hover >>> .v-slide-group__content {
+  animation-play-state: paused;
+}
+
+/* Estilização das imagens do slide */
+.slide-img {
+  transition: transform 0.3s ease;
+}
+
+/* Efeito hover nas imagens */
+.slide-img:hover {
+  transform: scale(1.1);
+}
 </style>
 
 <script>
