@@ -23,3 +23,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+# maestro-bpmn
+maestro-bpmn/node_modules/
+maestro-bpmn/dist/
