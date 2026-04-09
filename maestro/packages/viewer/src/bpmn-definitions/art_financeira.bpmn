@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1fin02" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.42.0">
+  <bpmn:collaboration id="Collaboration_MacroContabil">
+    <bpmn:participant id="Participant_Contabil" name="Processo de Gestão Contábil e Fiscal Anual" processRef="Process_Contabilidade_Macro" />
+    <bpmn:textAnnotation id="TextAnnotation_1qu06ey">
+      <bpmn:text>Art. 25º, I: Publicar todas as notícias das atividades da entidade</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_05awemx">
+      <bpmn:text>Art. 17º, III: Discutir e homologar as contas e o balanço aprovado pelo Conselho fiscal</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_0avy0vf">
+      <bpmn:text>Art. 31º, II: Opinar sobre os balanços e relatórios de desempenho financeiro e contábil e sobre as operações patrimoniais realizadas, emitindo pareceres para os organismo superiores da entidade;</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_02n1re5">
+      <bpmn:text>Art. 22º, V: Levar à apreciação da Assembleia Geral Ordinária seu relatório anual e o balanço financeiro com parecer do Conselho Fiscal e, no fim de seu mandato, apresentar um relatório geral de sua gestão;</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_1hj32yb">
+      <bpmn:text>Art. 31º, I: Examinar os livros de escrituração da organização; 
+Art. 31º, Parágrafo Único: O Conselho Fiscal reunir-se-á, por regra, a cada 06 meses.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_1bu1017">
+      <bpmn:text>Art. 29º, VII: assegurar que seus recursos financeiros tenham o rendimento condizente com perfil de risco adequado, que os recursos sejam gerenciados com eficiência, monitorando a gestão patrimonial dos ativos da associação e a elaboração e execução orçamentária realizada pelos gestores;</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_0ypt5hy">
+      <bpmn:text>Art. 17º, I: Aprovar a proposta de programação anual da organização, submetida pela Diretoria.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:textAnnotation id="TextAnnotation_16wkbnd">
+      <bpmn:text>Art. 22º, I: Elaborar e submeter à Assembléia Geral a proposta de programação anual da organização;</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_1d2gttj" associationDirection="None" sourceRef="Activity_T8" targetRef="TextAnnotation_1qu06ey" />
+    <bpmn:association id="Association_1yuun5d" associationDirection="None" sourceRef="Activity_T7" targetRef="TextAnnotation_05awemx" />
+    <bpmn:association id="Association_18un7ss" associationDirection="None" sourceRef="Activity_T6" targetRef="TextAnnotation_0avy0vf" />
+    <bpmn:association id="Association_0cepsob" associationDirection="None" sourceRef="Activity_T5" targetRef="TextAnnotation_02n1re5" />
+    <bpmn:association id="Association_0b9qg6e" associationDirection="None" sourceRef="Activity_T4" targetRef="TextAnnotation_1hj32yb" />
+    <bpmn:association id="Association_1ypuaxm" associationDirection="None" sourceRef="Activity_T2" targetRef="TextAnnotation_1bu1017" />
+    <bpmn:association id="Association_18vljqz" associationDirection="None" sourceRef="Activity_T3" targetRef="TextAnnotation_0ypt5hy" />
+    <bpmn:association id="Association_01yb1lb" associationDirection="None" sourceRef="Activity_T1" targetRef="TextAnnotation_16wkbnd" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Contabilidade_Macro" isExecutable="true" camunda:historyTimeToLive="180">
+    <bpmn:laneSet id="LaneSet_Contabil">
+      <bpmn:lane id="Lane_Sistema" name="VIce-Presidente">
+        <bpmn:flowNodeRef>Activity_T8</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_FimFiscal</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Assembleia" name="Assembleia Geral">
+        <bpmn:flowNodeRef>Activity_T3</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_T7</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ConsFiscal" name="Conselho Fiscal">
+        <bpmn:flowNodeRef>Activity_T4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_T6</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_ConsAdm" name="Conselho de Administração">
+        <bpmn:flowNodeRef>Activity_T2</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Diretoria" name="Qualquer membro da diretoria">
+        <bpmn:flowNodeRef>Activity_T5</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_T1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0rzypvl</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:userTask id="Activity_T3" name="Aprovar a proposta de programação anual">
+      <bpmn:incoming>Flow_04idi0n</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_T2" name="Monitorar a elaboração e execução orçamentária">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_T4" name="Realizar a verificação periódica dos livros (a cada 6 meses)">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_T5" name="Elaborar o relatório anual e o balanço financeiro">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_T6" name="Emitir parecer escrito sobre os balanços e contas">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+      <bpmn:outgoing>Flow_7</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_T7" name="Discutir e homologar as contas aprovadas">
+      <bpmn:incoming>Flow_7</bpmn:incoming>
+      <bpmn:outgoing>Flow_8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:scriptTask id="Activity_T8" name="Publicar relatório de atividades e demonstrações" scriptFormat="javascript">
+      <bpmn:incoming>Flow_8</bpmn:incoming>
+      <bpmn:outgoing>Flow_9</bpmn:outgoing>
+      <bpmn:script>console.log("Relatório Fiscal Publicado");</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="Event_FimFiscal">
+      <bpmn:incoming>Flow_9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_T1" name="Elaborar a proposta de programação anual e orçamento">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gz1vp5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:startEvent id="StartEvent_1" name="Início do ano fiscal">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_0rzypvl" name="Convocação da assembléia geral">
+      <bpmn:incoming>Flow_1gz1vp5</bpmn:incoming>
+      <bpmn:outgoing>Flow_04idi0n</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_04idi0n" sourceRef="Activity_0rzypvl" targetRef="Activity_T3" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Activity_T3" targetRef="Activity_T2" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Activity_T2" targetRef="Activity_T4" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Activity_T4" targetRef="Activity_T5" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Activity_T5" targetRef="Activity_T6" />
+    <bpmn:sequenceFlow id="Flow_7" sourceRef="Activity_T6" targetRef="Activity_T7" />
+    <bpmn:sequenceFlow id="Flow_8" sourceRef="Activity_T7" targetRef="Activity_T8" />
+    <bpmn:sequenceFlow id="Flow_9" sourceRef="Activity_T8" targetRef="Event_FimFiscal" />
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Activity_T1" />
+    <bpmn:sequenceFlow id="Flow_1gz1vp5" sourceRef="Activity_T1" targetRef="Activity_0rzypvl" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_MacroContabil">
+      <bpmndi:BPMNShape id="Participant_Contabil_di" bpmnElement="Participant_Contabil" isHorizontal="true">
+        <dc:Bounds x="160" y="200" width="2010" height="750" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Sistema_di" bpmnElement="Lane_Sistema" isHorizontal="true">
+        <dc:Bounds x="190" y="800" width="1980" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Assembleia_di" bpmnElement="Lane_Assembleia" isHorizontal="true">
+        <dc:Bounds x="190" y="650" width="1980" height="150" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ConsFiscal_di" bpmnElement="Lane_ConsFiscal" isHorizontal="true">
+        <dc:Bounds x="190" y="500" width="1980" height="150" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_ConsAdm_di" bpmnElement="Lane_ConsAdm" isHorizontal="true">
+        <dc:Bounds x="190" y="350" width="1980" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Diretoria_di" bpmnElement="Lane_Diretoria" isHorizontal="true">
+        <dc:Bounds x="190" y="200" width="1980" height="150" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T3_di" bpmnElement="Activity_T3">
+        <dc:Bounds x="890" y="685" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T2_di" bpmnElement="Activity_T2">
+        <dc:Bounds x="1050" y="385" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T4_di" bpmnElement="Activity_T4">
+        <dc:Bounds x="1210" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T5_di" bpmnElement="Activity_T5">
+        <dc:Bounds x="1370" y="235" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T6_di" bpmnElement="Activity_T6">
+        <dc:Bounds x="1530" y="535" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T7_di" bpmnElement="Activity_T7">
+        <dc:Bounds x="1690" y="685" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T8_di" bpmnElement="Activity_T8">
+        <dc:Bounds x="1850" y="835" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_FimFiscal_di" bpmnElement="Event_FimFiscal">
+        <dc:Bounds x="2010" y="857" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1931" y="780" width="78" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_T1_di" bpmnElement="Activity_T1">
+        <dc:Bounds x="450" y="235" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="272" y="257" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="261" y="300" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0rzypvl_di" bpmnElement="Activity_0rzypvl">
+        <dc:Bounds x="700" y="235" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_04idi0n_di" bpmnElement="Flow_04idi0n">
+        <di:waypoint x="800" y="275" />
+        <di:waypoint x="845" y="275" />
+        <di:waypoint x="845" y="725" />
+        <di:waypoint x="890" y="725" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="990" y="725" />
+        <di:waypoint x="1020" y="725" />
+        <di:waypoint x="1020" y="425" />
+        <di:waypoint x="1050" y="425" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="1150" y="425" />
+        <di:waypoint x="1180" y="425" />
+        <di:waypoint x="1180" y="575" />
+        <di:waypoint x="1210" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <di:waypoint x="1310" y="575" />
+        <di:waypoint x="1340" y="575" />
+        <di:waypoint x="1340" y="275" />
+        <di:waypoint x="1370" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <di:waypoint x="1470" y="275" />
+        <di:waypoint x="1500" y="275" />
+        <di:waypoint x="1500" y="575" />
+        <di:waypoint x="1530" y="575" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_7_di" bpmnElement="Flow_7">
+        <di:waypoint x="1630" y="575" />
+        <di:waypoint x="1660" y="575" />
+        <di:waypoint x="1660" y="725" />
+        <di:waypoint x="1690" y="725" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_8_di" bpmnElement="Flow_8">
+        <di:waypoint x="1790" y="725" />
+        <di:waypoint x="1820" y="725" />
+        <di:waypoint x="1820" y="875" />
+        <di:waypoint x="1850" y="875" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_9_di" bpmnElement="Flow_9">
+        <di:waypoint x="1950" y="875" />
+        <di:waypoint x="2010" y="875" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="308" y="275" />
+        <di:waypoint x="450" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gz1vp5_di" bpmnElement="Flow_1gz1vp5">
+        <di:waypoint x="550" y="275" />
+        <di:waypoint x="700" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1d2gttj_di" bpmnElement="Association_1d2gttj">
+        <di:waypoint x="1921" y="835" />
+        <di:waypoint x="1943" y="794" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1yuun5d_di" bpmnElement="Association_1yuun5d">
+        <di:waypoint x="1761" y="685" />
+        <di:waypoint x="1811" y="590" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_18un7ss_di" bpmnElement="Association_18un7ss">
+        <di:waypoint x="1603" y="535" />
+        <di:waypoint x="1633" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0cepsob_di" bpmnElement="Association_0cepsob">
+        <di:waypoint x="1440" y="235" />
+        <di:waypoint x="1478" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0b9qg6e_di" bpmnElement="Association_0b9qg6e">
+        <di:waypoint x="1276" y="615" />
+        <di:waypoint x="1294" y="660" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_1ypuaxm_di" bpmnElement="Association_1ypuaxm">
+        <di:waypoint x="1084" y="385" />
+        <di:waypoint x="1054" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_18vljqz_di" bpmnElement="Association_18vljqz">
+        <di:waypoint x="990" y="711" />
+        <di:waypoint x="1060" y="690" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_01yb1lb_di" bpmnElement="Association_01yb1lb">
+        <di:waypoint x="509" y="315" />
+        <di:waypoint x="527" y="390" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="TextAnnotation_1qu06ey_di" bpmnElement="TextAnnotation_1qu06ey">
+        <dc:Bounds x="1930" y="710" width="99.99305040770942" height="83.76575240919199" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_05awemx_di" bpmnElement="TextAnnotation_05awemx">
+        <dc:Bounds x="1790" y="519" width="170" height="71" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0avy0vf_di" bpmnElement="TextAnnotation_0avy0vf">
+        <dc:Bounds x="1620" y="400" width="280" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_02n1re5_di" bpmnElement="TextAnnotation_02n1re5">
+        <dc:Bounds x="1460" y="80" width="270" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1hj32yb_di" bpmnElement="TextAnnotation_1hj32yb">
+        <dc:Bounds x="1250" y="660" width="270" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1bu1017_di" bpmnElement="TextAnnotation_1bu1017">
+        <dc:Bounds x="970" y="210" width="300" height="100" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0ypt5hy_di" bpmnElement="TextAnnotation_0ypt5hy">
+        <dc:Bounds x="1060" y="661" width="99.99305040770942" height="127.50185322461083" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_16wkbnd_di" bpmnElement="TextAnnotation_16wkbnd">
+        <dc:Bounds x="480" y="390" width="230" height="60" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

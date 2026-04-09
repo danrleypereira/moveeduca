@@ -1,0 +1,7 @@
+{
+  "name": "@maestro/engine",
+  "version": "1.0.0",
+  "description": "BPMN Engine for Maestro",
+  "type": "module",
+  "main": "index.js"
+}

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Maestro BPMN Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/bpmn-visualization@0.47.0/dist/bpmn-visualization.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --panel-light: #f1f5f9;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #e94560;
+            --accent-soft: rgba(233, 69, 96, 0.15);
+            --line: rgba(15, 23, 42, 0.12);
+            --canvas-bg: #f8fafc;
+            --diagram-text: #0f172a;
+            --diagram-text-soft: #334155;
+            --diagram-line: #64748b;
+            --diagram-container-stroke: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body, html {
+            height: 100%;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sidebar minimalista */
+        #sidebar {
+            width: 280px;
+            background: var(--panel);
+            border-right: 1px solid var(--line);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            color: var(--text);
+            font-weight: 400;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--panel-light);
+            color: var(--text);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        input::placeholder {
+            color: var(--muted);
+        }
+
+        select option {
+            background: var(--panel);
+            color: var(--text);
+        }
+
+        /* Container do diagrama - wrapper fixo */
+        #bpmn-container {
+            flex-grow: 1;
+            position: relative;
+            background: var(--canvas-bg);
+            overflow: hidden;
+        }
+
+        /* Canvas interno onde o BPMN é renderizado - recebe as transformações de zoom/pan */
+        #bpmn-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Empty state - posicionado no container, não no canvas */
+        #empty-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        #empty-state.hidden {
+            display: none;
+        }
+
+        .empty-content {
+            max-width: 360px;
+        }
+
+        .empty-content svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .empty-content p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Controles de zoom - fixos, fora do canvas que sofre transformações */
+        #zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+            pointer-events: auto;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--line);
+            background: var(--panel);
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, border-color 0.2s, transform 0.1s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .zoom-btn:hover {
+            background: var(--panel-light);
+            border-color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .zoom-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Status bar - fixa, fora do canvas */
+        #status-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid var(--line);
+            font-size: 0.8rem;
+            color: var(--muted);
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            pointer-events: none;
+            max-width: calc(100% - 200px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #status-bar.active {
+            color: var(--accent);
+            border-color: var(--accent-soft);
+        }
+
+        /* ===== BPMN Dark Theme ===== */
+        /* O mxGraph usa estilos inline, então usamos seletores de classe da bpmn-visualization */
+
+        /* Fundo do canvas SVG */
+        #bpmn-canvas svg {
+            background: var(--canvas-bg) !important;
+        }
+
+        /* Texto / labels - classes reais da biblioteca */
+        #bpmn-canvas .bpmn-label text,
+        #bpmn-canvas .bpmn-label tspan,
+        #bpmn-canvas text,
+        #bpmn-canvas tspan {
+            fill: var(--diagram-text) !important;
+        }
+
+        #bpmn-canvas .bpmn-type-container text,
+        #bpmn-canvas .bpmn-type-container tspan,
+        #bpmn-canvas .bpmn-type-flow text,
+        #bpmn-canvas .bpmn-type-flow tspan,
+        #bpmn-canvas .bpmn-label.bpmn-flow-label text,
+        #bpmn-canvas .bpmn-label.bpmn-flow-label tspan {
+            fill: var(--diagram-text-soft) !important;
+        }
+
+        /* Tasks (bpmn-type-task) - azul */
+        #bpmn-canvas .bpmn-type-task rect {
+            fill: #dbeafe !important;
+            stroke: #60a5fa !important;
+            stroke-width: 1.5 !important;
+        }
+
+        /* Gateways (bpmn-type-gateway) - amarelo */
+        #bpmn-canvas .bpmn-type-gateway polygon,
+        #bpmn-canvas .bpmn-type-gateway path {
+            fill: #fffbeb !important;
+            stroke: #f59e0b !important;
+            stroke-width: 1.5 !important;
+        }
+
+        /* Eventos (bpmn-type-event) - círculos */
+        #bpmn-canvas .bpmn-type-event ellipse,
+        #bpmn-canvas .bpmn-type-event circle {
+            fill: #ffffff !important;
+            stroke: #94a3b8 !important;
+            stroke-width: 1.5 !important;
+        }
+
+        /* Flows / conexões (bpmn-type-flow) */
+        #bpmn-canvas .bpmn-type-flow path,
+        #bpmn-canvas .bpmn-type-flow polyline,
+        #bpmn-canvas .bpmn-type-flow line {
+            stroke: var(--diagram-line) !important;
+        }
+
+        /* Atividades / sub-processos (bpmn-type-activity) */
+        #bpmn-canvas .bpmn-type-activity rect {
+            fill: #eff6ff !important;
+            stroke: #3b82f6 !important;
+            stroke-width: 1.5 !important;
+        }
+
+        /* Containers / Pools / Lanes (bpmn-type-container) */
+        #bpmn-canvas .bpmn-type-container rect {
+            fill: #ffffff !important;
+            stroke: var(--diagram-container-stroke) !important;
+        }
+
+        #bpmn-canvas .bpmn-type-container > rect:first-child,
+        #bpmn-canvas .bpmn-type-container [data-bpmn-id] > rect:first-child {
+            fill: #f8fafc !important;
+        }
+
+        /* Ícones internos (bpmn-icon-*) */
+        #bpmn-canvas .bpmn-icon-initiating path,
+        #bpmn-canvas .bpmn-icon-non-initiating path,
+        #bpmn-canvas [class*="bpmn-icon"] path,
+        #bpmn-canvas [class*="bpmn-icon"] ellipse {
+            fill: rgba(255,255,255,0.7) !important;
+            stroke: rgba(255,255,255,0.7) !important;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            #app {
+                flex-direction: column;
+            }
+            #sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 12px;
+                gap: 10px;
+            }
+            .logo {
+                width: 100%;
+            }
+            .form-group {
+                flex: 1;
+                min-width: 140px;
+            }
+            #bpmn-container {
+                min-height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <div class="logo">Maestro <span>BPMN</span></div>
+            
+            <div class="form-group">
+                <label for="diagram-search">Buscar</label>
+                <input id="diagram-search" type="text" placeholder="Digite para filtrar...">
+            </div>
+            
+            <div class="form-group">
+                <label for="diagram-select">Diagrama</label>
+                <select id="diagram-select">
+                    <option value="">Carregando...</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="bpmn-container">
+            <!-- Canvas interno onde o BPMN é renderizado - sofre transformações de zoom/pan -->
+            <div id="bpmn-canvas"></div>
+
+            <div id="empty-state">
+                <div class="empty-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M9 17H5a2 2 0 0 0-2 2 2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm12-2h-4a2 2 0 0 0-2 2 2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zM12 17V7m0 0l3-3m-3 3l-3-3"/>
+                    </svg>
+                    <p>Selecione um diagrama para visualizar</p>
+                </div>
+            </div>
+
+            <!-- Controles posicionados fora do canvas - ficam fixos durante zoom/pan -->
+            <div id="zoom-controls">
+                <button class="zoom-btn" id="zoom-in" title="Zoom In">+</button>
+                <button class="zoom-btn" id="zoom-out" title="Zoom Out">−</button>
+                <button class="zoom-btn" id="zoom-fit" title="Ajustar">⊡</button>
+            </div>
+
+            <div id="status-bar">Pronto</div>
+        </div>
+    </div>
+
+    <script>
+        // Inicializa o visualizador com navegação habilitada
+        const bpmnVisualization = new bpmnvisu.BpmnVisualization({
+            container: 'bpmn-canvas',  // Usa o canvas interno, não o container completo
+            navigation: {
+                enabled: true,
+                zoom: {
+                    throttleDelay: 50
+                },
+                panning: {
+                    enabled: true,
+                    avoidDraggingShapes: true  // Evita conflito entre drag de elementos e pan
+                }
+            }
+        });
+
+        const selectEl = document.getElementById('diagram-select');
+        const searchEl = document.getElementById('diagram-search');
+        const emptyStateEl = document.getElementById('empty-state');
+        const statusBarEl = document.getElementById('status-bar');
+
+        // Controles de zoom
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const zoomFitBtn = document.getElementById('zoom-fit');
+
+        let allFiles = [];
+
+        function formatTitle(fileName) {
+            return fileName
+                .replace('.bpmn', '')
+                .replace(/[_-]+/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        function updateStatus(message, active = false) {
+            statusBarEl.textContent = message;
+            statusBarEl.classList.toggle('active', active);
+        }
+
+        function renderOptions(files, selected = '') {
+            selectEl.innerHTML = '';
+            
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = files.length ? 'Selecione...' : 'Nenhum encontrado';
+            selectEl.appendChild(placeholder);
+
+            files.forEach(file => {
+                const opt = document.createElement('option');
+                opt.value = file;
+                opt.textContent = formatTitle(file);
+                opt.selected = file === selected;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function applyFilter(selectedFromUrl = '') {
+            const query = searchEl.value.trim().toLowerCase();
+            const filtered = allFiles.filter(f => 
+                formatTitle(f).toLowerCase().includes(query) || 
+                f.toLowerCase().includes(query)
+            );
+            
+            const nextSelected = filtered.includes(selectedFromUrl) ? selectedFromUrl : '';
+            renderOptions(filtered, nextSelected);
+            
+            return filtered;
+        }
+
+        // Aplica dark theme nos elementos SVG (mxGraph usa estilos inline)
+        function getReadableFill(currentFill) {
+            if (!currentFill) return 'var(--diagram-text)';
+
+            const fill = currentFill.trim().toLowerCase();
+            if (fill === 'none' || fill === 'transparent') return currentFill;
+
+            const darkFills = new Set([
+                '#000', '#000000', 'black', '#050505', '#080808', '#0a0a0a', '#111', '#111111', '#161616', '#1a1a1a', '#222', '#222222',
+            ]);
+
+            return darkFills.has(fill) ? 'var(--diagram-text)' : currentFill;
+        }
+
+        function applyDarkTheme() {
+            const canvas = document.getElementById('bpmn-canvas');
+            const svg = canvas.querySelector('svg');
+            if (!svg) return;
+
+            // Textos / labels
+            svg.querySelectorAll('text, tspan').forEach(el => {
+                const computedFill = getComputedStyle(el).fill;
+                el.style.fill = getReadableFill(computedFill);
+                el.setAttribute('fill', getReadableFill(el.getAttribute('fill') || computedFill));
+                el.style.fontWeight = '500';
+            });
+
+            svg.querySelectorAll('.bpmn-type-container text, .bpmn-type-container tspan, .bpmn-type-flow text, .bpmn-type-flow tspan, .bpmn-flow-label text, .bpmn-flow-label tspan').forEach(el => {
+                el.style.fill = 'var(--diagram-text-soft)';
+                el.setAttribute('fill', 'var(--diagram-text-soft)');
+            });
+
+            // Percorre todos os elementos com classe bpmn-type-*
+            svg.querySelectorAll('[class]').forEach(el => {
+                const cls = el.getAttribute('class') || '';
+
+                // Tasks - azul
+                if (cls.includes('bpmn-type-task')) {
+                    el.querySelectorAll('rect').forEach(r => {
+                        r.style.fill = '#dbeafe';
+                        r.style.stroke = '#60a5fa';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+
+                // Gateways - amarelo
+                if (cls.includes('bpmn-type-gateway')) {
+                    el.querySelectorAll('polygon, path').forEach(r => {
+                        r.style.fill = '#fffbeb';
+                        r.style.stroke = '#f59e0b';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+
+                // Eventos - círculos
+                if (cls.includes('bpmn-type-event')) {
+                    el.querySelectorAll('ellipse, circle').forEach(r => {
+                        r.style.fill = '#ffffff';
+                        r.style.stroke = '#94a3b8';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+
+                // Flows / conexões
+                if (cls.includes('bpmn-type-flow')) {
+                    el.querySelectorAll('path, polyline, line').forEach(r => {
+                        r.style.stroke = 'var(--diagram-line)';
+                    });
+                }
+
+                // Atividades / sub-processos
+                if (cls.includes('bpmn-type-activity')) {
+                    el.querySelectorAll('rect').forEach(r => {
+                        r.style.fill = '#eff6ff';
+                        r.style.stroke = '#3b82f6';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+
+                // Containers / Pools / Lanes
+                if (cls.includes('bpmn-type-container')) {
+                    el.querySelectorAll('rect').forEach(r => {
+                        r.style.fill = '#ffffff';
+                        r.style.stroke = 'var(--diagram-container-stroke)';
+                    });
+                }
+
+                // Ícones internos
+                if (cls.includes('bpmn-icon')) {
+                    el.querySelectorAll('path, ellipse, circle').forEach(r => {
+                        r.style.fill = 'rgba(255,255,255,0.75)';
+                        r.style.stroke = 'rgba(255,255,255,0.75)';
+                    });
+                }
+            });
+        }
+
+        async function loadDiagram(fileName) {
+            if (!fileName) {
+                try { bpmnVisualization.graph.clear(); } catch(e) {}
+                emptyStateEl.classList.remove('hidden');
+                updateStatus('Nenhum diagrama selecionado');
+                return;
+            }
+
+            try {
+                updateStatus(`Carregando ${formatTitle(fileName)}...`, true);
+                
+                const response = await fetch(`/bpmn/${fileName}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const xml = await response.text();
+                
+                // load() chama navigation.fit() internamente com as opções passadas
+                bpmnVisualization.load(xml, {
+                    fit: { type: 'HorizontalVertical', margin: 20 }
+                });
+
+                // Aplica dark theme após renderização
+                applyDarkTheme();
+                requestAnimationFrame(applyDarkTheme);
+                setTimeout(applyDarkTheme, 150);
+                
+                emptyStateEl.classList.add('hidden');
+                updateStatus(formatTitle(fileName), true);
+                
+                // Atualiza URL
+                const url = new URL(window.location.href);
+                url.hash = `diagram=${encodeURIComponent(fileName)}`;
+                window.history.replaceState({}, '', url);
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                emptyStateEl.classList.remove('hidden');
+                updateStatus('Erro ao carregar diagrama');
+            }
+        }
+
+        function getDiagramFromUrl() {
+            const hash = window.location.hash.startsWith('#') 
+                ? window.location.hash.slice(1) 
+                : window.location.hash;
+            return new URLSearchParams(hash).get('diagram');
+        }
+
+        async function init() {
+            try {
+                const response = await fetch('/api/diagrams');
+                allFiles = await response.json();
+                
+                const fromUrl = getDiagramFromUrl();
+                applyFilter(fromUrl);
+                
+                if (fromUrl && allFiles.includes(fromUrl)) {
+                    selectEl.value = fromUrl;
+                    await loadDiagram(fromUrl);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar lista:', error);
+                selectEl.innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+
+        // Event Listeners
+        selectEl.addEventListener('change', (e) => loadDiagram(e.target.value));
+
+        searchEl.addEventListener('input', () => {
+            const current = selectEl.value;
+            const filtered = applyFilter(current);
+            
+            if (current && !filtered.includes(current)) {
+                selectEl.value = '';
+                loadDiagram('');
+            }
+        });
+
+        // API: navigation.zoom('in'|'out') e navigation.fit(options)
+        function doZoomIn() {
+            bpmnVisualization.navigation.zoom('in');
+        }
+
+        function doZoomOut() {
+            bpmnVisualization.navigation.zoom('out');
+        }
+
+        function doFit() {
+            bpmnVisualization.navigation.fit({ type: 'HorizontalVertical', margin: 20 });
+        }
+
+        // Zoom controls
+        zoomInBtn.addEventListener('click', doZoomIn);
+        zoomOutBtn.addEventListener('click', doZoomOut);
+        zoomFitBtn.addEventListener('click', doFit);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            
+            if (e.key === '+' || e.key === '=') doZoomIn();
+            else if (e.key === '-') doZoomOut();
+            else if (e.key === '0') doFit();
+        });
+
+        // Inicializa
+        init();
+    </script>
+</body>
+</html>

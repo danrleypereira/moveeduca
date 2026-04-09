@@ -1,0 +1,7 @@
+{
+  "name": "@maestro/database",
+  "version": "1.0.0",
+  "description": "MongoDB layer for Maestro",
+  "type": "module",
+  "main": "index.js"
+}
