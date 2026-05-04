@@ -1,11 +1,14 @@
+# General
 .DS_Store
-node_modules
-/dist
-functions/ui-debug.log
-
+website/node_modules/
+website/dist/
+website/functions/ui-debug.log
+**/functions/sendgrid.env
+**/*.env
+*.env
 # local env files
-.env.local
-.env.*.local
+website/.env.local
+website/.env.*.local
 
 # Log files
 npm-debug.log*
@@ -20,3 +23,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+# maestro-bpmn
+maestro-bpmn/node_modules/
+maestro-bpmn/dist/
