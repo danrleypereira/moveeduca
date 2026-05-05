@@ -6,20 +6,20 @@
         contain
       ></v-img>
     </v-layout>
-    <v-layout>
+    <v-layout class="justify-center align-center">
       <v-sheet
-        class="mx-auto"
+        class="mx-auto d-flex justify-center"
         color="accent"
         width="100vw"
       >
-        <v-slide-group multiple>
+        <v-slide-group multiple show-arrows center-active class="justify-center">
           <v-slide-item
             v-for="(item, i) in items"
             :key="i"
             v-slot:default="{ active, toggle }"
           >
             <v-img
-              class="mx-2 slide-img"
+              class="ma-5 slide-img"
               :src="item.src"
               contain
               max-width="20vh"
@@ -35,6 +35,21 @@
 
 <style scoped>
 /* Estilos do componente HelloWorld */
+.slide-img {
+  transition: transform 0.3s ease;
+}
+
+.slide-img:hover {
+  transform: scale(1.1);
+}
+
+.v-slide-group {
+  justify-content: center !important;
+}
+
+.v-slide-group__wrapper {
+  justify-content: center !important;
+}
 </style>
 
 <script>
@@ -68,23 +83,26 @@ export default {
         src: require('../assets/partners/udf-logo.png'),
       },
       {
-        src: require('../assets/partners/gdf.png'),
+        src: 'https://i.imgur.com/mAOu6Vh.png',
       },
-      {
-        src: require('../assets/partners/IADES-BRASIL.png'),
-      },
-      {
-        src: require('../assets/partners/acig-logo.png'),
-      },
-      {
-        src: require('../assets/partners/brasil-sem-drogas-logo-removebg.png'),
-      },
-      {
-        src: require('../assets/partners/santos-inocente-logo-removebg.png'),
-      },
-      {
-        src: require('../assets/partners/amigos-do-concurso-removebg.png'),
-      },
+      // {
+      //   src: require('../assets/partners/gdf.png'),
+      // },
+      // {
+      //   src: require('../assets/partners/IADES-BRASIL.png'),
+      // },
+      // {
+      //   src: require('../assets/partners/acig-logo.png'),
+      // },
+      // {
+      //   src: require('../assets/partners/brasil-sem-drogas-logo-removebg.png'),
+      // },
+      // {
+      //   src: require('../assets/partners/santos-inocente-logo-removebg.png'),
+      // },
+      // {
+      //   src: require('../assets/partners/amigos-do-concurso-removebg.png'),
+      // },
       
     ],
     model: null,

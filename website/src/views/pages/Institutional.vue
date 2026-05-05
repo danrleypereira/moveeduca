@@ -10,6 +10,7 @@
     >
       <v-flex xs12 md9 lg9 class="">
         <InstitutionalInfo></InstitutionalInfo>
+        <v-btn color="primary" tile @click="downloadEstatuto" class="mx-4 my-2 ml-9" x-large>Visualizar Estatuto</v-btn>
         <v-card color="#385F73" dark class="mx-4 my-2">
           <v-card-title class="text-h5">
             {{ this.$vuetify.lang.t("$vuetify.organanizationPage.head") }}
@@ -118,43 +119,53 @@ export default {
     return {
       members: [
         {
-          name: "Ademar Lamoglia",
+          name: "Israel Carvalho",
           role: () => this.getTextFromI18n("$vuetify.roles.president"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
         {
           name: "Danrley Pereira",
-          role: () => this.getTextFromI18n("$vuetify.roles.financialOfficer"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
-        },
-        {
-          name: "Paulo Fernando",
-          role: () => this.getTextFromI18n("$vuetify.roles.managingOfficer"),
+          role: () => this.getTextFromI18n("$vuetify.roles.treasurer"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
         {
           name: "Polyana Cunha",
-          role: () => this.getTextFromI18n("$vuetify.roles.generalSecretary"),
+          role: () => this.getTextFromI18n("$vuetify.roles.vice"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
         {
-          name: "Israel Carvalho",
-          role: () => this.getTextFromI18n("$vuetify.roles.member"),
+          name: "Carmen Lucia",
+          role: () => this.getTextFromI18n("$vuetify.roles.secretary"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
         {
-          name: "Claudina Aguiar",
-          role: () => this.getTextFromI18n("$vuetify.roles.member"),
+          name: "Carlos Antonio",
+          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
         {
-          name: "Eduarda Aguiar",
-          role: () => this.getTextFromI18n("$vuetify.roles.member"),
+          name: "Aulus Diniz",
+          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
         {
-          name: "Geniv Catarina",
-          role: () => this.getTextFromI18n("$vuetify.roles.member"),
+          name: "Rita de Cassia",
+          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
+          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+        },
+        {
+          name: "Vanessa Carvalho",
+          role: () => this.getTextFromI18n("$vuetify.roles.administrativeCouncil"),
+          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+        },
+        {
+          name: "Milka de Paula",
+          role: () => this.getTextFromI18n("$vuetify.roles.administrativeCouncil"),
+          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+        },
+        {
+          name: "Paulo Murilo",
+          role: () => this.getTextFromI18n("$vuetify.roles.administrativeCouncil"),
           profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
         },
       ],
@@ -164,6 +175,12 @@ export default {
     getTextFromI18n: function (elementName) {
       return this.$vuetify.lang.t(elementName);
     },
+    downloadEstatuto() {
+      const link = document.createElement('a');
+      link.href = '/docs/Estatuto Move & Educa.pdf';
+      link.download = 'Estatuto Move & Educa.pdf';
+      link.click();
+    }
   },
 };
 </script>

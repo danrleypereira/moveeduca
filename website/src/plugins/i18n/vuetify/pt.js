@@ -186,6 +186,20 @@ export default {
       action1: "",
       action2: "",
     },
+    udf: {
+      description:
+        "O Centro de Ensino Unificado de Brasília (UDF) é uma instituição de ensino superior reconhecida pela qualidade de sua formação acadêmica. A Move&Educa frequentemente apoia e mentora alunos do UDF, oferecendo oportunidades de estágio, participação em projetos sociais e desenvolvimento de habilidades profissionais.",
+      name: "UDF",
+      action1: "",
+      action2: "",
+    },
+    unb: {
+      description:
+        "A Universidade de Brasília (UnB) é uma das principais universidades públicas do Brasil, conhecida pela excelência em ensino e pesquisa. A Move&Educa regularmente oferece oportunidades para alunos da UnB participarem de nossos projetos, recebendo mentoria e adquirindo experiência prática em diversas áreas da educação.",
+      name: "UnB",
+      action1: "",
+      action2: "",
+    },
   },
   projects: {
     mover: {
@@ -343,9 +357,14 @@ export default {
   },
   roles: {
     president: "Presidente",
+    vice: "Vice",
+    treasurer: "Tesoureiro",
+    secretary: "Secretária",
     financialOfficer: "Diretor Financeiro",
     managingOfficer: "Diretor Administrativo",
     generalSecretary: "Secretário Geral",
+    fiscalCouncil: "Conselho Fiscal",
+    administrativeCouncil: "Conselho Administrativo",
     member: "Membro",
   },
   aside: {
@@ -360,7 +379,7 @@ export default {
   ],
   about: [
     "Bem-vindo ao Move&Educa, um movimento que tem como objetivo principal despertar a consciência através da educação.",
-    "Fundado em 2020, o Move&Educa opera de maneira autônoma e estabeleceu parcerias com segmentos distintos da sociedade, abrangendo áreas como educação, saúde e assistência social.",
+    "Idealizado em 2020, o Move&Educa opera de maneira autônoma e estabeleceu parcerias com segmentos distintos da sociedade, abrangendo áreas como educação, saúde e assistência social.",
     "Nossa visão é colaborar com outras instituições de ensino na consolidação das habilidades do século XXI, conforme definido pela UNESCO. Acreditamos no poder da educação transformadora e no potencial de cada ser humano.",
     "Alinhados aos nossos valores, buscamos a unidade, neutralidade política, respeito, colaboração interna e externa, integridade, sustentabilidade, inovação e transparência em todas as nossas ações e decisões.",
     "A Move&Educa, desde sua concepção, enfatiza a importância da literacia da informação, pensamento crítico, comunicação, autogestão, consciência global, criatividade, literacia financeira, resiliência, trabalho em equipe e ética.",

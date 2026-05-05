@@ -41,7 +41,10 @@
 
                         <v-list>
                             <v-list-item-group>
-                                <v-list-item v-for="value in getValues()" :key="value.title" @click="openDialog(value)">
+                                <v-list-item v-for="value in getValues()" :key="value.title" @click="openDialog(value)" class="clickable-item">
+                                    <template v-slot:prepend>
+                                        <v-icon color="primary" class="mr-2">mdi-chevron-right</v-icon>
+                                    </template>
                                     <v-list-item-content>
                                         <v-list-item-title v-text="value.title"></v-list-item-title>
                                         <v-list-item-subtitle v-text="value.description"></v-list-item-subtitle>
@@ -58,7 +61,10 @@
 
                         <v-list>
                             <v-list-item-group>
-                                <v-list-item v-for="skill in getSkills()" :key="skill" @click="openSkillDialog(skill)">
+                                <v-list-item v-for="skill in getSkills()" :key="skill" @click="openSkillDialog(skill)" class="clickable-item">
+                                    <template v-slot:prepend>
+                                        <v-icon color="primary" class="mr-2">mdi-chevron-right</v-icon>
+                                    </template>
                                     <v-list-item-content>
                                         <v-list-item-title v-text="skill"></v-list-item-title>
                                     </v-list-item-content>
@@ -122,4 +128,28 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+.clickable-item {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.clickable-item:hover {
+    background-color: rgba(25, 118, 210, 0.12) !important;
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.clickable-item:hover .v-icon {
+    animation: bounce-right 0.5s ease infinite;
+}
+
+@keyframes bounce-right {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+}
+</style>
   
