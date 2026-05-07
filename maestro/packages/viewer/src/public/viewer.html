@@ -1571,11 +1571,11 @@
                     if (snap.status === 'completed') {
                         updateStatus('[OK] Processo concluído — todas etapas passaram', 'idle');
                         stopPolling();
-                        updateToast('[OK] Ping concluído com sucesso!', 'success');
+                        updateToast('[OK] Processo concluído com sucesso!', 'success');
                     } else if (snap.status === 'error') {
                         updateStatus('[FAIL] Processo com erro', 'error');
                         stopPolling();
-                        updateToast('[FAIL] Servidor offline — falha no ping', 'error');
+                        updateToast('[FAIL] Servidor offline — Falha no processo', 'error');
                     }
 
                 } catch (err) {

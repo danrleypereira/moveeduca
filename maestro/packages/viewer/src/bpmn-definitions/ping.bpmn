@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_PingServ" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.44.0">
+  <bpmn:collaboration id="Collaboration_Ping">
+    <bpmn:participant id="Participant_PingServ" name="ping-serv" processRef="Process_PingServ" />
+  </bpmn:collaboration>
+  <bpmn:process id="Process_PingServ" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_Serve" name="serve">
+        <bpmn:flowNodeRef>Task_ReceivePing</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Engine" name="engine">
+        <bpmn:flowNodeRef>EndEvent_Offline</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReturnMS</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_Online</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Responded</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SendPing</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>StartEvent_Trigger</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:endEvent id="EndEvent_Offline" name="Fim (Offline)">
+      <bpmn:incoming>Flow_No</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:task id="Task_ReceivePing" name="Receber Ping">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ReturnMS" name="Retornar MS e Status Online">
+      <bpmn:incoming>Flow_Yes</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_Online" name="Fim (Online)">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:exclusiveGateway id="Gateway_Responded" name="Retornou?">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_Yes</bpmn:outgoing>
+      <bpmn:outgoing>Flow_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_SendPing" name="Enviar Ping">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:startEvent id="StartEvent_Trigger" name="Gatilho">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_No" name="Não" sourceRef="Gateway_Responded" targetRef="EndEvent_Offline" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_SendPing" targetRef="Task_ReceivePing" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_ReceivePing" targetRef="Gateway_Responded" />
+    <bpmn:sequenceFlow id="Flow_Yes" name="Sim" sourceRef="Gateway_Responded" targetRef="Task_ReturnMS" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_ReturnMS" targetRef="EndEvent_Online" />
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_Trigger" targetRef="Task_SendPing" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_Ping">
+      <bpmndi:BPMNShape id="Participant_PingServ_di" bpmnElement="Participant_PingServ" isHorizontal="true">
+        <dc:Bounds x="150" y="80" width="990" height="350" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Serve_di" bpmnElement="Lane_Serve" isHorizontal="true">
+        <dc:Bounds x="180" y="305" width="960" height="125" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Engine_di" bpmnElement="Lane_Engine" isHorizontal="true">
+        <dc:Bounds x="180" y="80" width="960" height="225" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Offline_di" bpmnElement="EndEvent_Offline">
+        <dc:Bounds x="642" y="120" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="630" y="105" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReceivePing_di" bpmnElement="Task_ReceivePing">
+        <dc:Bounds x="485" y="325" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReturnMS_di" bpmnElement="Task_ReturnMS">
+        <dc:Bounds x="810" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_Online_di" bpmnElement="EndEvent_Online">
+        <dc:Bounds x="1002" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="990" y="225" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Responded_di" bpmnElement="Gateway_Responded" isMarkerVisible="true">
+        <dc:Bounds x="635" y="218" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="569" y="233" width="52" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SendPing_di" bpmnElement="Task_SendPing">
+        <dc:Bounds x="335" y="170" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_Trigger_di" bpmnElement="StartEvent_Trigger">
+        <dc:Bounds x="245" y="192" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="247" y="235" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <di:waypoint x="281" y="210" />
+        <di:waypoint x="335" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <di:waypoint x="385" y="250" />
+        <di:waypoint x="385" y="365" />
+        <di:waypoint x="485" y="365" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <di:waypoint x="585" y="365" />
+        <di:waypoint x="660" y="365" />
+        <di:waypoint x="660" y="268" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Yes_di" bpmnElement="Flow_Yes">
+        <di:waypoint x="685" y="243" />
+        <di:waypoint x="748" y="243" />
+        <di:waypoint x="748" y="200" />
+        <di:waypoint x="810" y="200" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="708" y="225" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_No_di" bpmnElement="Flow_No">
+        <di:waypoint x="660" y="218" />
+        <di:waypoint x="660" y="156" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="634" y="172" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <di:waypoint x="910" y="200" />
+        <di:waypoint x="1002" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

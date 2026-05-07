@@ -3,11 +3,11 @@
  * Envia um email de teste usando SendGrid API
  *
  * Fluxo do processo:
- * 1. Activity_0lgejgo (Preparação do e-mail)
- * 2. Activity_0wa4lu1 (Envio de e-mail)
- * 3. Gateway_07hbhkv (Verifica se enviou)
- * 4a. Se Sim → Activity_0zhzj2f (Email recebido) → Event_1ym6bvz (Fim)
- * 4b. Se Não → Event_0rkw20j (Erro ao enviar email)
+ * 1. Activity_0lgejgo (Preparação do e-mail) [Lane: Engine]
+ * 2. Activity_0wa4lu1 (Conexão com SendGrid para envio de e-mail) [Lane: Engine]
+ * 3. Gateway_07hbhkv (Email enviado com sucesso?)
+ * 4a. Sim → Activity_1qt3rm5 (Email recebido) → Event_1ym6bvz (Fim) [Lane: Cliente]
+ * 4b. Não → Event_1j69mp8 (Return error) [Lane: Engine]
  *
  * Variáveis de ambiente necessárias:
  * - SENDGRID_API_KEY: sua API key do SendGrid

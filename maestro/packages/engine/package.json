@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@maestro/database": "1.0.0",
+    "@sendgrid/mail": "^8.1.6",
     "bpmn-engine": "^25.0.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
