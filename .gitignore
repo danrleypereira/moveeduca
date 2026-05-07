@@ -26,3 +26,9 @@ yarn-error.log*
 # maestro-bpmn
 maestro-bpmn/node_modules/
 maestro-bpmn/dist/
+
+# maestro (BPMN engine)
+maestro/node_modules/
+maestro/data/
+maestro/packages/*/node_modules/
+maestro/packages/*/dist/

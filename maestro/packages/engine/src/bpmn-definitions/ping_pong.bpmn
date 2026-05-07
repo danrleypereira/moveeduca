@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://maestro.bpmn/ping-pong"
+             id="Definitions_PingPong">
+
+  <collaboration id="Collaboration_PingPong">
+    <participant id="Pool_Player1" name="Player 1" processRef="Process_Player1" />
+    <participant id="Pool_Player2" name="Player 2" processRef="Process_Player2" />
+    <messageFlow id="MsgFlow_P1Rebate" name="Bola: Ping!" sourceRef="Task_P1Rebate" targetRef="Task_P2Recebe" />
+    <messageFlow id="MsgFlow_P2Rebate" name="Bola: Pong!" sourceRef="Task_P2Rebate" targetRef="Task_P1Recebe" />
+  </collaboration>
+
+  <!-- PROCESSO DO PLAYER 1 (executável) -->
+  <process id="Process_Player1" name="Processo Player 1" isExecutable="true">
+    <startEvent id="Start_P1" name="Início">
+      <outgoing>Flow_P1_0</outgoing>
+    </startEvent>
+    <sequenceFlow id="Flow_P1_0" sourceRef="Start_P1" targetRef="Task_P1Rebate" />
+
+    <serviceTask id="Task_P1Rebate" name="Ping! (Rebate Bola)"
+                 implementation="${environment.services.p1Rebate}">
+      <outgoing>Flow_P1_1</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_P1_1" sourceRef="Task_P1Rebate" targetRef="Task_P1Recebe" />
+
+    <serviceTask id="Task_P1Recebe" name="Pong! (Recebe Bola)"
+                 implementation="${environment.services.p1Recebe}">
+      <outgoing>Flow_P1_2</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_P1_2" sourceRef="Task_P1Recebe" targetRef="Task_P1Decide" />
+
+    <exclusiveGateway id="Gateway_P1" name="Mais rounds?">
+      <incoming>Flow_P1_2</incoming>
+      <outgoing>Flow_P1_3</outgoing>
+      <outgoing>Flow_P1_4</outgoing>
+    </exclusiveGateway>
+
+    <sequenceFlow id="Flow_P1_3" sourceRef="Gateway_P1" targetRef="Task_P1Rebate">
+      <conditionExpression xsi:type="bpmn:tFormalExpression">${environment.variables.rounds &lt; 10}</conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_P1_4" sourceRef="Gateway_P1" targetRef="End_P1">
+      <conditionExpression xsi:type="bpmn:tFormalExpression">${environment.variables.rounds &gt;= 10}</conditionExpression>
+    </sequenceFlow>
+
+    <endEvent id="End_P1" name="Fim do Jogo">
+      <incoming>Flow_P1_4</incoming>
+    </endEvent>
+  </process>
+
+  <!-- PROCESSO DO PLAYER 2 (não executável - visualização) -->
+  <process id="Process_Player2" name="Processo Player 2" isExecutable="false">
+    <startEvent id="Start_P2" name="Aguarda">
+      <outgoing>Flow_P2_0</outgoing>
+    </startEvent>
+    <sequenceFlow id="Flow_P2_0" sourceRef="Start_P2" targetRef="Task_P2Recebe" />
+
+    <serviceTask id="Task_P2Recebe" name="Recebe Bola"
+                 implementation="webService">
+      <outgoing>Flow_P2_1</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_P2_1" sourceRef="Task_P2Recebe" targetRef="Task_P2Rebate" />
+
+    <serviceTask id="Task_P2Rebate" name="Pong! (Rebate de Volta)"
+                 implementation="webService">
+      <outgoing>Flow_P2_2</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_P2_2" sourceRef="Task_P2Rebate" targetRef="End_P2" />
+
+    <endEvent id="End_P2" name="Ok">
+      <incoming>Flow_P2_2</incoming>
+    </endEvent>
+  </process>
+
+  <!-- DIAGRAMA -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_PingPong">
+    <bpmndi:BPMNPlane id="BPMNPlane_PingPong" bpmnElement="Collaboration_PingPong">
+
+      <!-- Pool Player 1 -->
+      <bpmndi:BPMNShape id="Shape_Pool_P1" bpmnElement="Pool_Player1" isHorizontal="true">
+        <dc:Bounds x="80" y="60" width="800" height="350" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Start_P1" bpmnElement="Start_P1">
+        <dc:Bounds x="140" y="160" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="125" y="200" width="66" height="18" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_P1Rebate" bpmnElement="Task_P1Rebate">
+        <dc:Bounds x="230" y="120" width="150" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="235" y="155" width="140" height="30" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_P1Recebe" bpmnElement="Task_P1Recebe">
+        <dc:Bounds x="500" y="120" width="150" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="505" y="155" width="140" height="30" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Gateway_P1" bpmnElement="Gateway_P1" isMarkerVisible="true">
+        <dc:Bounds x="480" y="270" width="40" height="40" />
+        <bpmndi:BPMNLabel><dc:Bounds x="465" y="315" width="70" height="18" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_End_P1" bpmnElement="End_P1">
+        <dc:Bounds x="680" y="270" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="655" y="310" width="86" height="18" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Flows Player 1 -->
+      <bpmndi:BPMNEdge id="Edge_Flow_P1_0" bpmnElement="Flow_P1_0">
+        <di:waypoint x="176" y="178" />
+        <di:waypoint x="230" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_P1_1" bpmnElement="Flow_P1_1">
+        <di:waypoint x="380" y="160" />
+        <di:waypoint x="500" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_P1_2" bpmnElement="Flow_P1_2">
+        <di:waypoint x="575" y="200" />
+        <di:waypoint x="575" y="290" />
+        <di:waypoint x="500" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_P1_3" bpmnElement="Flow_P1_3">
+        <di:waypoint x="480" y="290" />
+        <di:waypoint x="305" y="290" />
+        <di:waypoint x="305" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_P1_4" bpmnElement="Flow_P1_4">
+        <di:waypoint x="520" y="290" />
+        <di:waypoint x="680" y="288" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Pool Player 2 -->
+      <bpmndi:BPMNShape id="Shape_Pool_P2" bpmnElement="Pool_Player2" isHorizontal="true">
+        <dc:Bounds x="80" y="440" width="800" height="250" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Start_P2" bpmnElement="Start_P2">
+        <dc:Bounds x="680" y="520" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="665" y="560" width="66" height="18" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_P2Recebe" bpmnElement="Task_P2Recebe">
+        <dc:Bounds x="530" y="490" width="130" height="70" />
+        <bpmndi:BPMNLabel><dc:Bounds x="535" y="520" width="120" height="20" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_P2Rebate" bpmnElement="Task_P2Rebate">
+        <dc:Bounds x="300" y="490" width="130" height="70" />
+        <bpmndi:BPMNLabel><dc:Bounds x="305" y="520" width="120" height="20" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_End_P2" bpmnElement="End_P2">
+        <dc:Bounds x="140" y="505" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="115" y="545" width="86" height="18" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Flows Player 2 -->
+      <bpmndi:BPMNEdge id="Edge_Flow_P2_0" bpmnElement="Flow_P2_0">
+        <di:waypoint x="680" y="538" />
+        <di:waypoint x="660" y="525" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_P2_1" bpmnElement="Flow_P2_1">
+        <di:waypoint x="530" y="525" />
+        <di:waypoint x="430" y="525" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Flow_P2_2" bpmnElement="Flow_P2_2">
+        <di:waypoint x="300" y="525" />
+        <di:waypoint x="176" y="523" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Message Flows (crosseia os pools) -->
+      <bpmndi:BPMNEdge id="Edge_MsgFlow_P1Rebate" bpmnElement="MsgFlow_P1Rebate" messageVisibleKind="initiating">
+        <di:waypoint x="380" y="170" />
+        <di:waypoint x="660" y="525" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_MsgFlow_P2Rebate" bpmnElement="MsgFlow_P2Rebate" messageVisibleKind="initiating">
+        <di:waypoint x="300" y="490" />
+        <di:waypoint x="230" y="200" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

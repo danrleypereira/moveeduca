@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+             xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+             targetNamespace="http://maestro.bpmn/dado-jogo"
+             id="Definitions_DadoJogo">
+
+  <collaboration id="Collaboration_DadoJogo">
+    <participant id="Pool_Jogador" name="Jogador" processRef="Process_Jogador" />
+    <participant id="Pool_Dado" name="Dado" processRef="Process_Dado" />
+    <messageFlow id="MsgFlow_PedeDado" name="Pede Dado" sourceRef="Task_JogadorPede" targetRef="Task_DadoRola" />
+    <messageFlow id="MsgFlow_EnviaResultado" name="Resultado" sourceRef="Task_DadoEnvia" targetRef="Task_JogadorRecebe" />
+  </collaboration>
+
+  <!-- PROCESSO DO JOGADOR (executável) -->
+  <process id="Process_Jogador" name="Processo Jogador" isExecutable="true">
+    <startEvent id="Start_Jogador" name="Início">
+      <outgoing>Flow_J1</outgoing>
+    </startEvent>
+    <sequenceFlow id="Flow_J1" sourceRef="Start_Jogador" targetRef="Task_JogadorPede" />
+
+    <serviceTask id="Task_JogadorPede" name="Jogador Pede Dado"
+                 implementation="${environment.services.jogadorPede}">
+      <outgoing>Flow_J2</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_J2" sourceRef="Task_JogadorPede" targetRef="Task_DadoRola" />
+
+    <serviceTask id="Task_DadoRola" name="Dado Rola"
+                 implementation="${environment.services.dadoRola}">
+      <outgoing>Flow_J3</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_J3" sourceRef="Task_DadoRola" targetRef="Task_DadoEnvia" />
+
+    <serviceTask id="Task_DadoEnvia" name="Dado Envia Resultado"
+                 implementation="${environment.services.dadoEnvia}">
+      <outgoing>Flow_J4</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_J4" sourceRef="Task_DadoEnvia" targetRef="Task_JogadorRecebe" />
+
+    <serviceTask id="Task_JogadorRecebe" name="Jogador Recebe Número"
+                 implementation="${environment.services.jogadorRecebe}">
+      <outgoing>Flow_J5</outgoing>
+    </serviceTask>
+    <sequenceFlow id="Flow_J5" sourceRef="Task_JogadorRecebe" targetRef="End_Jogador" />
+
+    <endEvent id="End_Jogador" name="Fim da Rodada">
+      <incoming>Flow_J5</incoming>
+    </endEvent>
+  </process>
+
+  <!-- PROCESSO DO DADO (não executável - apenas para visualização) -->
+  <process id="Process_Dado" name="Processo Dado" isExecutable="false">
+    <startEvent id="Start_Dado" name="Aguarda Pedido">
+      <outgoing>Flow_D1</outgoing>
+    </startEvent>
+    <sequenceFlow id="Flow_D1" sourceRef="Start_Dado" targetRef="End_Dado" />
+    <endEvent id="End_Dado" name="Resultado Enviado">
+      <incoming>Flow_D1</incoming>
+    </endEvent>
+  </process>
+
+  <!-- DIAGRAMA (DI) -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_DadoJogo">
+
+      <!-- Pool Jogador -->
+      <bpmndi:BPMNShape id="Shape_Pool_Jogador" bpmnElement="Pool_Jogador" isHorizontal="true">
+        <dc:Bounds x="120" y="80" width="900" height="200" />
+        <bpmndi:BPMNLabel><dc:Bounds x="130" y="170" width="20" height="80" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Start_Jogador" bpmnElement="Start_Jogador">
+        <dc:Bounds x="192" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="178" y="205" width="64" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Task_JogadorPede" bpmnElement="Task_JogadorPede">
+        <dc:Bounds x="290" y="140" width="160" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Task_JogadorRecebe" bpmnElement="Task_JogadorRecebe">
+        <dc:Bounds x="600" y="140" width="160" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_End_Jogador" bpmnElement="End_Jogador">
+        <dc:Bounds x="862" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="840" y="205" width="80" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Pool Dado -->
+      <bpmndi:BPMNShape id="Shape_Pool_Dado" bpmnElement="Pool_Dado" isHorizontal="true">
+        <dc:Bounds x="120" y="320" width="900" height="200" />
+        <bpmndi:BPMNLabel><dc:Bounds x="130" y="410" width="20" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Start_Dado" bpmnElement="Start_Dado">
+        <dc:Bounds x="192" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="168" y="445" width="84" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Task_DadoRola" bpmnElement="Task_DadoRola">
+        <dc:Bounds x="290" y="380" width="160" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_Task_DadoEnvia" bpmnElement="Task_DadoEnvia">
+        <dc:Bounds x="520" y="380" width="160" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_End_Dado" bpmnElement="End_Dado">
+        <dc:Bounds x="752" y="402" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="726" y="445" width="88" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Flows Jogador (visíveis no diagrama) -->
+      <bpmndi:BPMNEdge id="Edge_Flow_J1" bpmnElement="Flow_J1">
+        <di:waypoint x="228" y="180" /><di:waypoint x="290" y="180" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Flow_J2" bpmnElement="Flow_J2">
+        <di:waypoint x="450" y="180" /><di:waypoint x="370" y="180" />
+        <di:waypoint x="370" y="380" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Flow_J3" bpmnElement="Flow_J3">
+        <di:waypoint x="450" y="420" /><di:waypoint x="520" y="420" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Flow_J4" bpmnElement="Flow_J4">
+        <di:waypoint x="680" y="420" /><di:waypoint x="680" y="180" />
+        <di:waypoint x="600" y="180" />
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_Flow_J5" bpmnElement="Flow_J5">
+        <di:waypoint x="760" y="180" /><di:waypoint x="862" y="180" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Flows Dado -->
+      <bpmndi:BPMNEdge id="Edge_Flow_D1" bpmnElement="Flow_D1">
+        <di:waypoint x="228" y="420" /><di:waypoint x="752" y="420" />
+      </bpmndi:BPMNEdge>
+
+      <!-- Message Flows (visuais) -->
+      <bpmndi:BPMNEdge id="Edge_MsgFlow_PedeDado" bpmnElement="MsgFlow_PedeDado">
+        <di:waypoint x="370" y="220" /><di:waypoint x="370" y="380" />
+        <bpmndi:BPMNLabel><dc:Bounds x="376" y="293" width="58" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Edge_MsgFlow_EnviaResultado" bpmnElement="MsgFlow_EnviaResultado">
+        <di:waypoint x="600" y="380" /><di:waypoint x="600" y="220" />
+        <bpmndi:BPMNLabel><dc:Bounds x="606" y="293" width="52" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
