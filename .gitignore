@@ -30,3 +30,19 @@ firebase-debug.*.log
 *.njsproj
 *.sln
 *.sw?
+
+# LaTeX build artifacts
+documentos/*.aux
+documentos/*.log
+documentos/*.out
+documentos/*.toc
+documentos/*.lof
+documentos/*.lot
+documentos/*.fls
+documentos/*.fdb_latexmk
+documentos/*.synctex.gz
+documentos/*.bbl
+documentos/*.blg
+documentos/*.nav
+documentos/*.snm
+documentos/*.vrb
