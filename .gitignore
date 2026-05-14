@@ -1,19 +1,26 @@
 # General
 .DS_Store
-website/node_modules/
-website/dist/
-website/functions/ui-debug.log
-**/functions/sendgrid.env
+
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/dist/
+**/build/
+
+# Env files
 **/*.env
-*.env
-# local env files
-website/.env.local
-website/.env.*.local
+**/.env.local
+**/.env.*.local
+**/functions/sendgrid.env
 
 # Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+**/functions/ui-debug.log
+firebase-debug.log
+firebase-debug.*.log
 
 # Editor directories and files
 .idea
@@ -23,6 +30,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-# maestro-bpmn
-maestro-bpmn/node_modules/
-maestro-bpmn/dist/
