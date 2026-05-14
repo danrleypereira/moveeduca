@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Maestro BPMN Engine</title>
+    <script src="https://cdn.jsdelivr.net/npm/bpmn-visualization@0.47.0/dist/bpmn-visualization.min.js"></script>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --panel: #ffffff;
+            --panel-light: #f1f5f9;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #e94560;
+            --accent-soft: rgba(233, 69, 96, 0.15);
+            --line: rgba(15, 23, 42, 0.12);
+            --canvas-bg: #f0f4ff;
+            --diagram-text: #0f172a;
+            --diagram-text-soft: #334155;
+            --diagram-line: #94a3b8;
+            --diagram-container-stroke: #cbd5e1;
+
+            /* Status Colors */
+            --green-active: #22c55e;
+            --green-completed: #15803d;
+            --green-light: #4ade80;
+            --green-fill: rgba(34, 197, 94, 0.18);
+            --green-fill-done: rgba(22, 163, 74, 0.1);
+            --green-glow: rgba(34, 197, 94, 0.6);
+            --red-error: #dc2626;
+            --red-fill: rgba(220, 38, 38, 0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body, html {
+            height: 100%;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* ===== Sidebar ===== */
+        #sidebar {
+            width: 310px;
+            background: var(--panel);
+            border-right: 1px solid var(--line);
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #e94560, #ff6b6b);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(233, 69, 96, 0.35);
+        }
+
+        .logo span { color: var(--text); font-weight: 400; }
+
+        /* ===== Service Status Indicators ===== */
+        .service-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 10px;
+            background: var(--panel-light);
+            border-radius: 8px;
+            border: 1px solid var(--line);
+        }
+
+        .service-status-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+
+        .health-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+
+        .health-dot.online {
+            background: var(--green-active);
+            box-shadow: 0 0 6px var(--green-glow);
+        }
+
+        .health-dot.offline {
+            background: var(--red-error);
+            box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
+        }
+
+        .health-dot.checking {
+            background: var(--muted);
+            opacity: 0.5;
+            animation: pulse-checking 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-checking {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1.5px solid var(--line);
+            background: var(--panel-light);
+            color: var(--text);
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        input::placeholder { color: var(--muted); }
+        select option { background: var(--panel); color: var(--text); }
+
+        .divider {
+            height: 1px;
+            background: var(--line);
+            margin: 2px 0;
+        }
+
+        /* ===== Botão Processar ===== */
+        #btn-start-process,
+        #btn-start-pingpong {
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #btn-start-process {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+        }
+
+        #btn-start-pingpong {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+        }
+
+        #btn-start-process::after, #btn-start-pingpong::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+            transform: translateX(-150%);
+            transition: transform 0.5s;
+        }
+
+        #btn-start-process:hover::after, #btn-start-pingpong:hover::after { transform: translateX(150%); }
+        #btn-start-process:hover {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(34, 197, 94, 0.45);
+        }
+        #btn-start-pingpong:hover {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
+        }
+        #btn-start-process:active, #btn-start-pingpong:active { transform: translateY(0); }
+        #btn-start-process:disabled, #btn-start-pingpong:disabled {
+            background: var(--muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== Instâncias ===== */
+        #instances-list {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .instance-card {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1.5px solid var(--line);
+            background: var(--panel-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.82rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .instance-card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: transparent;
+            transition: background 0.2s;
+        }
+
+        .instance-card:hover { border-color: var(--green-active); }
+        .instance-card.selected {
+            border-color: var(--green-active);
+            background: rgba(34, 197, 94, 0.07);
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+        }
+        .instance-card.selected::before { background: var(--green-active); }
+
+        .instance-card .inst-id {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 0.78rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 8px;
+        }
+
+        .instance-card .inst-status {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-left: 8px;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-dot.running {
+            background: var(--green-active);
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+        .status-dot.completed { background: var(--green-completed); }
+        .status-dot.error { background: var(--red-error); }
+        .status-dot.pending { background: var(--muted); }
+
+        /* ===== Toast Animations ===== */
+        @keyframes toastFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes toastFadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--green-glow); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 5px transparent; }
+        }
+
+        .inst-status-text { font-size: 0.75rem; color: var(--muted); }
+
+        /* ===== Process Buttons ===== */
+        .process-btn {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: var(--panel-light);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .process-btn:hover {
+            background: var(--accent-soft);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .process-btn:active {
+            transform: scale(0.98);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #process-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* ===== Log ===== */
+        #activity-log {
+            font-size: 0.73rem;
+            color: var(--muted);
+            max-height: 150px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding-right: 4px;
+        }
+
+        #activity-log::-webkit-scrollbar { width: 4px; }
+        #activity-log::-webkit-scrollbar-track { background: transparent; }
+        #activity-log::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+        .log-entry {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            animation: logFadeIn 0.3s ease-out;
+        }
+
+        @keyframes logFadeIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-entry .log-time {
+            color: var(--muted);
+            flex-shrink: 0;
+            font-size: 0.68rem;
+            opacity: 0.7;
+        }
+
+        .log-entry .log-event {
+            font-weight: 700;
+            width: 16px;
+            text-align: center;
+        }
+
+        .log-entry.start .log-event { color: var(--green-active); }
+        .log-entry.end .log-event { color: var(--green-completed); }
+        .log-entry.error .log-event { color: var(--red-error); }
+
+        .log-entry .log-name {
+            color: var(--text);
+            font-size: 0.73rem;
+            font-weight: 500;
+        }
+
+        /* ===== Container do Diagrama ===== */
+        #bpmn-container {
+            flex-grow: 1;
+            position: relative;
+            background: var(--canvas-bg);
+            overflow: hidden;
+            background-image: radial-gradient(circle, #d0daf0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        #bpmn-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #empty-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+            z-index: 1;
+            pointer-events: none;
+            background: var(--canvas-bg);
+        }
+
+        #empty-state.hidden { display: none; }
+
+        .empty-content { max-width: 360px; }
+
+        .empty-content svg {
+            width: 72px;
+            height: 72px;
+            margin-bottom: 20px;
+            opacity: 0.35;
+        }
+
+        .empty-content p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        /* ===== Zoom Controls ===== */
+        #zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 1000;
+        }
+
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1.5px solid var(--line);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(8px);
+        }
+
+        .zoom-btn:hover {
+            background: white;
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+        }
+        .zoom-btn:active { transform: translateY(0); }
+
+        /* ===== Status Bar ===== */
+        #status-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--line);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted);
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+            max-width: calc(100% - 200px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        #status-bar.active {
+            color: var(--green-active);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        #status-bar.error {
+            color: var(--red-error);
+            border-color: rgba(220, 38, 38, 0.3);
+        }
+
+        .status-dot-small {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            flex-shrink: 0;
+        }
+
+        #status-bar.active .status-dot-small {
+            animation: pulse-dot 1.5s ease-in-out infinite;
+        }
+
+        /* ====== BPMN VISUALIZATION — BASE THEME ====== */
+        #bpmn-canvas svg { background: var(--canvas-bg) !important; }
+
+        #bpmn-canvas .bpmn-label text, #bpmn-canvas .bpmn-label tspan,
+        #bpmn-canvas text, #bpmn-canvas tspan {
+            fill: var(--diagram-text) !important;
+        }
+
+        #bpmn-canvas .bpmn-type-container text, #bpmn-canvas .bpmn-type-container tspan,
+        #bpmn-canvas .bpmn-type-flow text, #bpmn-canvas .bpmn-type-flow tspan,
+        #bpmn-canvas .bpmn-label.bpmn-flow-label text,
+        #bpmn-canvas .bpmn-label.bpmn-flow-label tspan {
+            fill: var(--diagram-text-soft) !important;
+        }
+
+        #bpmn-canvas .bpmn-type-task rect {
+            fill: #dbeafe !important;
+            stroke: #60a5fa !important;
+            stroke-width: 1.5 !important;
+        }
+
+        #bpmn-canvas .bpmn-type-gateway polygon,
+        #bpmn-canvas .bpmn-type-gateway path {
+            fill: #fffbeb !important;
+            stroke: #1e3a5f !important;
+            stroke-width: 2px !important;
+        }
+
+        #bpmn-canvas .bpmn-type-event ellipse,
+        #bpmn-canvas .bpmn-type-event circle {
+            fill: #ffffff !important;
+            stroke: #94a3b8 !important;
+            stroke-width: 1.5 !important;
+        }
+
+        #bpmn-canvas .bpmn-type-flow path,
+        #bpmn-canvas .bpmn-type-flow polyline,
+        #bpmn-canvas .bpmn-type-flow line {
+            stroke: var(--diagram-line) !important;
+        }
+
+        #bpmn-canvas .bpmn-type-activity rect {
+            fill: #eff6ff !important;
+            stroke: #3b82f6 !important;
+            stroke-width: 1.5 !important;
+        }
+
+        #bpmn-canvas .bpmn-type-container rect {
+            fill: #ffffff !important;
+            stroke: var(--diagram-container-stroke) !important;
+        }
+
+        /* ====== STATUS EXECUTION OVERLAYS — ANIMADAS! ====== */
+
+        /* ──────────────────────────────────────────────
+           ATIVA: BARRA DE PROGRESSO ANIMADA + SHIMMER
+           ────────────────────────────────────────── */
+
+        /* Camada de preenchimento da barra de progresso */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active > .progress-fill-rect,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active rect.progress-fill-rect {
+            fill: var(--green-active) !important;
+            opacity: 0.4;
+        }
+
+        /* Shimmer — faixa de luz passando no elemento */
+        @keyframes shimmer {
+            0%   { transform: translateX(-120%) skewX(-20deg); }
+            100% { transform: translateX(250%) skewX(-20deg); }
+        }
+
+        @keyframes borderPulse {
+            0%, 100% {
+                stroke-width: 3px;
+                filter: drop-shadow(0 0 6px var(--green-glow));
+            }
+            50% {
+                stroke-width: 4.5px;
+                filter: drop-shadow(0 0 14px var(--green-glow)) drop-shadow(0 0 24px rgba(34, 197, 94, 0.35));
+            }
+        }
+
+        @keyframes fillGrow {
+            0%   { fill: rgba(34, 197, 94, 0.05); }
+            30%  { fill: rgba(34, 197, 94, 0.35); }
+            100% { fill: rgba(34, 197, 94, 0.18); }
+        }
+
+        @keyframes textPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.75; }
+        }
+
+        /* Elemento ATIVO */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active rect:not(.progress-fill-rect),
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active polygon,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active ellipse,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active circle {
+            fill: rgba(34, 197, 94, 0.12) !important;
+            stroke: var(--green-active) !important;
+            stroke-width: 3.5px !important;
+            animation:
+                borderPulse 1.6s ease-in-out infinite,
+                fillGrow 0.5s ease-out forwards;
+        }
+
+        /* Faixa de luz (shimmer) sobre o elemento ativo */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(
+                105deg,
+                transparent 20%,
+                rgba(255, 255, 255, 0.35) 45%,
+                rgba(255, 255, 255, 0.6) 50%,
+                rgba(255, 255, 255, 0.35) 55%,
+                transparent 80%
+            );
+            width: 60%;
+            height: 100%;
+            animation: shimmer 1.4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        /* Textos pulsando quando ativo */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active text,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active tspan {
+            animation: textPulse 1.4s ease-in-out infinite;
+        }
+
+        /* Ícones internos */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active path,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-active ellipse {
+            fill: var(--green-active) !important;
+            opacity: 0.85;
+        }
+
+        /* ──────────────────────────────────────────────
+           COMPLETADA: TRANSIÇÃO SUAVE VERDE ESCURO
+           ────────────────────────────────────────── */
+
+        @keyframes completeSettle {
+            0%   { fill: rgba(34, 197, 94, 0.25); stroke-width: 4px; }
+            40%  { fill: rgba(22, 163, 74, 0.25); stroke-width: 3.5px; }
+            100% { fill: rgba(22, 163, 74, 0.1); stroke-width: 2.5px; }
+        }
+
+        @keyframes completeCheck {
+            0%   { opacity: 0; transform: scale(0.5); }
+            60%  { opacity: 1; transform: scale(1.15); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes completeGlow {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(22, 163, 74, 0.3)); }
+            50%      { filter: drop-shadow(0 0 8px rgba(22, 163, 74, 0.5)); }
+        }
+
+        /* Elemento COMPLETADO — fade suave do verde ativo pro verde escuro */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-completed rect:not(.progress-fill-rect),
+        #bpmn-canvas [data-bpmn-id].bpmn-status-completed polygon,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-completed ellipse,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-completed circle {
+            fill: rgba(22, 163, 74, 0.1) !important;
+            stroke: var(--green-completed) !important;
+            stroke-width: 2.5px !important;
+            animation:
+                completeSettle 0.6s ease-out forwards,
+                completeGlow 3s ease-in-out infinite;
+        }
+
+        /* Ícones de check */
+        #bpmn-canvas [data-bpmn-id].bpmn-status-completed path,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-completed ellipse {
+            fill: var(--green-completed) !important;
+        }
+
+        /* ──────────────────────────────────────────────
+           ERRO: PULSO VERMELHO
+           ────────────────────────────────────────── */
+
+        @keyframes errorPulse {
+            0%, 100% {
+                fill: rgba(220, 38, 38, 0.12);
+                stroke-width: 3px;
+                filter: drop-shadow(0 0 6px rgba(220, 38, 38, 0.4));
+            }
+            50% {
+                fill: rgba(220, 38, 38, 0.25);
+                stroke-width: 4px;
+                filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.6));
+            }
+        }
+
+        @keyframes errorShake {
+            0%, 100% { transform: translateX(0); }
+            20%  { transform: translateX(-2px); }
+            40%  { transform: translateX(2px); }
+            60%  { transform: translateX(-1px); }
+            80%  { transform: translateX(1px); }
+        }
+
+        #bpmn-canvas [data-bpmn-id].bpmn-status-error rect:not(.progress-fill-rect),
+        #bpmn-canvas [data-bpmn-id].bpmn-status-error polygon,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-error ellipse,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-error circle {
+            fill: rgba(220, 38, 38, 0.12) !important;
+            stroke: var(--red-error) !important;
+            stroke-width: 3px !important;
+            animation: errorPulse 1.2s ease-in-out infinite;
+        }
+
+        /* ──────────────────────────────────────────────
+           PENDENTE — RESET SUAVE
+           ────────────────────────────────────────── */
+
+        @keyframes pendingReset {
+            0%   { fill: rgba(34, 197, 94, 0.18); stroke: var(--green-active); }
+            100% { fill: ''; stroke: ''; }
+        }
+
+        #bpmn-canvas [data-bpmn-id].bpmn-status-pending rect:not(.progress-fill-rect),
+        #bpmn-canvas [data-bpmn-id].bpmn-status-pending polygon,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-pending ellipse,
+        #bpmn-canvas [data-bpmn-id].bpmn-status-pending circle {
+            animation: pendingReset 0.5s ease-out forwards;
+        }
+
+        /* ──────────────────────────────────────────────
+           FLASH DE ENTRADA — nova atividade aparece
+           ────────────────────────────────────────── */
+
+        @keyframes flashEnter {
+            0%   {
+                opacity: 0.2;
+                transform: scale(0.97);
+            }
+            50%  {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes flashEnterStroke {
+            0%   { stroke-width: 1px; stroke-opacity: 0.3; }
+            50%  { stroke-width: 5px; stroke-opacity: 1; }
+            100% { stroke-width: 3.5px; stroke-opacity: 1; }
+        }
+
+        #bpmn-canvas [data-bpmn-id].just-activated {
+            animation: flashEnter 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        #bpmn-canvas [data-bpmn-id].just-activated rect:not(.progress-fill-rect),
+        #bpmn-canvas [data-bpmn-id].just-activated polygon,
+        #bpmn-canvas [data-bpmn-id].just-activated ellipse,
+        #bpmn-canvas [data-bpmn-id].just-activated circle {
+            animation: flashEnterStroke 0.45s ease-out forwards !important;
+        }
+
+        /* ──────────────────────────────────────────────
+           FLOW ARROWS — setas animadas
+           ────────────────────────────────────────── */
+
+        @keyframes flowDash {
+            from { stroke-dashoffset: 200; }
+            to   { stroke-dashoffset: 0; }
+        }
+
+        @keyframes flowBrightness {
+            0%, 100% { filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.6)); }
+            50%       { filter: drop-shadow(0 0 8px rgba(34, 197, 94, 0.9)); }
+        }
+
+        @keyframes flowPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Seta em ANIMAÇÃO — verde correndo */
+        .bpmn-flow-animated path,
+        .bpmn-flow-animated polyline,
+        .bpmn-flow-animated line {
+            stroke: var(--green-active) !important;
+            stroke-width: 3.5px !important;
+            stroke-dasharray: 14 6 !important;
+            stroke-dashoffset: 200 !important;
+            animation:
+                flowDash 0.8s linear infinite,
+                flowBrightness 1.4s ease-in-out infinite !important;
+        }
+
+        /* Seta JÁ PERCORRIDA — verde escuro sólido */
+        .bpmn-flow-done path,
+        .bpmn-flow-done polyline,
+        .bpmn-flow-done line {
+            stroke: var(--green-completed) !important;
+            stroke-width: 2.5px !important;
+            stroke-dasharray: none !important;
+            animation: none !important;
+        }
+
+        /* Nova seta aparece com fade */
+        @keyframes flowAppear {
+            0%   { opacity: 0; stroke-width: 1px; }
+            50%  { opacity: 1; stroke-width: 4px; }
+            100% { opacity: 1; stroke-width: 3.5px; }
+        }
+
+        .bpmn-flow-animated {
+            animation: flowAppear 0.3s ease-out forwards, flowDash 0.8s linear infinite 0.3s !important;
+        }
+
+        /* ====== RESPONSIVO ====== */
+        @media (max-width: 768px) {
+            #app { flex-direction: column; }
+            #sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 12px;
+                gap: 10px;
+            }
+            .logo { width: 100%; }
+            .form-group { flex: 1; min-width: 140px; }
+            #bpmn-container { min-height: 60vh; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🎼</div>
+                Maestro <span>BPMN</span>
+            </div>
+
+            <div class="service-status">
+                <div class="service-status-item">
+                    <div class="health-dot checking" id="engine-health-dot"></div>
+                    <span>Engine</span>
+                </div>
+                <div class="service-status-item">
+                    <div class="health-dot checking" id="db-health-dot"></div>
+                    <span>Database</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="diagram-search">🔍 Buscar diagrama</label>
+                <input id="diagram-search" type="text" placeholder="Digite para filtrar...">
+            </div>
+
+            <div class="form-group">
+                <label for="diagram-select">[DIAG] Diagrama BPMN</label>
+                <select id="diagram-select">
+                    <option value="">Carregando...</option>
+                </select>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="form-group" id="process-buttons">
+                <label>🚀 Processos Disponíveis</label>
+                <div id="process-list">
+                    <div style="font-size:0.8rem; color: var(--muted); text-align:center; padding: 8px 0;">
+                        Carregando processos...
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>[NET] Instâncias Ativas</label>
+                <div id="instances-list">
+                    <div style="font-size:0.8rem; color: var(--muted); text-align:center; padding: 8px 0;">
+                        Nenhuma instância rodando
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" id="log-section" style="display:none; flex-direction:column; gap:5px;">
+                <label>[LOG] Log de Atividades</label>
+                <div id="activity-log"></div>
+            </div>
+        </div>
+
+        <div id="bpmn-container">
+            <div id="bpmn-canvas"></div>
+
+            <div id="empty-state">
+                <div class="empty-content">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+                        <path d="M9 17H5a2 2 0 0 0-2 2 2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zm12-2h-4a2 2 0 0 0-2 2 2 2 0 0 0 2 2h2a2 2 0 0 0 2-2zM12 17V7m0 0l3-3m-3 3L9 10"/>
+                    </svg>
+                    <p>Selecione um diagrama na lista acima<br>ou clique em <strong>"Iniciar Nova Rodada"</strong><br>para ver o jogo do dado em ação</p>
+                </div>
+            </div>
+
+            <div id="zoom-controls">
+                <button class="zoom-btn" id="zoom-in" title="Zoom In">+</button>
+                <button class="zoom-btn" id="zoom-out" title="Zoom Out">−</button>
+                <button class="zoom-btn" id="zoom-fit" title="Ajustar à Tela" style="font-size:1rem;">⊡</button>
+            </div>
+
+            <div id="status-bar">
+                <span class="status-dot-small"></span>
+                <span id="status-text">Aguardando...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== BPMN Visualization Init =====
+        const bpmnVisualization = new bpmnvisu.BpmnVisualization({
+            container: 'bpmn-canvas',
+            navigation: {
+                enabled: true,
+                zoom: { throttleDelay: 50 },
+                panning: { enabled: true, avoidDraggingShapes: true }
+            }
+        });
+
+        // ===== DOM Elements =====
+        const selectEl          = document.getElementById('diagram-select');
+        const searchEl          = document.getElementById('diagram-search');
+        const emptyStateEl      = document.getElementById('empty-state');
+        const statusBarEl       = document.getElementById('status-bar');
+        const statusTextEl      = document.getElementById('status-text');
+        const processListEl     = document.getElementById('process-list');
+        const instancesListEl   = document.getElementById('instances-list');
+        const activityLogEl     = document.getElementById('activity-log');
+        const logSectionEl      = document.getElementById('log-section');
+
+        const zoomInBtn  = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const zoomFitBtn = document.getElementById('zoom-fit');
+
+        const engineHealthDot = document.getElementById('engine-health-dot');
+        const dbHealthDot     = document.getElementById('db-health-dot');
+
+        // ===== Health Check =====
+        const HEALTH_CHECK_INTERVAL = 10000; // 10 segundos
+
+        async function checkEngineHealth() {
+            try {
+                const res = await fetch('/api/engine/health', { signal: AbortSignal.timeout(5000) });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.status === 'ok') {
+                        engineHealthDot.className = 'health-dot online';
+                        return;
+                    }
+                }
+                engineHealthDot.className = 'health-dot offline';
+            } catch (_err) {
+                engineHealthDot.className = 'health-dot offline';
+            }
+        }
+
+        async function checkDbHealth() {
+            try {
+                const res = await fetch('/api/database/health', { signal: AbortSignal.timeout(5000) });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.status === 'ok') {
+                        dbHealthDot.className = 'health-dot online';
+                        return;
+                    }
+                }
+                dbHealthDot.className = 'health-dot offline';
+            } catch (_err) {
+                dbHealthDot.className = 'health-dot offline';
+            }
+        }
+
+        function startHealthChecks() {
+            // Checagem imediata
+            checkEngineHealth();
+            checkDbHealth();
+
+            // Checagem periódica
+            setInterval(() => {
+                checkEngineHealth();
+                checkDbHealth();
+            }, HEALTH_CHECK_INTERVAL);
+        }
+
+        // ===== State =====
+        let allFiles        = [];
+        let activeInstanceId = null;
+        let pollingInterval  = null;
+        let lastLogCount     = 0;
+        let diagramLoaded    = false;
+        let currentStatus    = {};
+
+        // ===== Helpers =====
+        function formatTitle(fileName) {
+            return fileName
+                .replace('.bpmn', '')
+                .replace(/[_-]+/g, ' ')
+                .replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        function updateStatus(message, type = 'idle') {
+            statusTextEl.textContent = message;
+            statusBarEl.className = '';
+            if (type !== 'idle') statusBarEl.classList.add(type);
+        }
+
+        function formatTime(isoStr) {
+            const d = new Date(isoStr);
+            return d.toLocaleTimeString('pt-BR', {
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+        }
+
+        function shortId(instanceId) {
+            return instanceId.split('-').slice(-2).join('-');
+        }
+
+        // ===== Diagram Static List =====
+        function renderOptions(files, selected = '') {
+            selectEl.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = files.length ? 'Selecione um diagrama...' : 'Nenhum encontrado';
+            selectEl.appendChild(placeholder);
+            files.forEach(file => {
+                const opt = document.createElement('option');
+                opt.value = file;
+                opt.textContent = formatTitle(file);
+                opt.selected = file === selected;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function applyFilter(selectedFromUrl = '') {
+            const query = searchEl.value.trim().toLowerCase();
+            const filtered = allFiles.filter(f =>
+                formatTitle(f).toLowerCase().includes(query) ||
+                f.toLowerCase().includes(query)
+            );
+            const next = filtered.includes(selectedFromUrl) ? selectedFromUrl : '';
+            renderOptions(filtered, next);
+            return filtered;
+        }
+
+        // ===== Dark Theme / Base Styling =====
+        function getReadableFill(currentFill) {
+            if (!currentFill) return 'var(--diagram-text)';
+            const fill = currentFill.trim().toLowerCase();
+            if (fill === 'none' || fill === 'transparent') return currentFill;
+            const darkFills = new Set(['#000','#000000','black','#050505','#080808','#0a0a0a','#111','#111111','#161616','#1a1a1a','#222','#222222']);
+            return darkFills.has(fill) ? 'var(--diagram-text)' : currentFill;
+        }
+
+        function applyDarkTheme() {
+            const canvas = document.getElementById('bpmn-canvas');
+            const svg = canvas.querySelector('svg');
+            if (!svg) return;
+
+            svg.querySelectorAll('text, tspan').forEach(el => {
+                const computedFill = getComputedStyle(el).fill;
+                el.style.fill = getReadableFill(computedFill);
+                el.setAttribute('fill', getReadableFill(el.getAttribute('fill') || computedFill));
+                el.style.fontWeight = '500';
+            });
+
+            svg.querySelectorAll(
+                '.bpmn-type-container text, .bpmn-type-container tspan, ' +
+                '.bpmn-type-flow text, .bpmn-type-flow tspan, ' +
+                '.bpmn-flow-label text, .bpmn-flow-label tspan'
+            ).forEach(el => {
+                el.style.fill = 'var(--diagram-text-soft)';
+                el.setAttribute('fill', 'var(--diagram-text-soft)');
+            });
+
+            svg.querySelectorAll('[class]').forEach(el => {
+                const cls = el.getAttribute('class') || '';
+                if (cls.includes('bpmn-status-')) return;
+                if (cls.includes('bpmn-type-task')) {
+                    el.querySelectorAll('rect').forEach(r => {
+                        r.style.fill = '#dbeafe';
+                        r.style.stroke = '#60a5fa';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+                if (cls.includes('bpmn-type-gateway')) {
+                    el.querySelectorAll('polygon, path').forEach(r => {
+                        r.style.fill = '#fffbeb';
+                        r.style.stroke = '#f59e0b';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+                if (cls.includes('bpmn-type-event')) {
+                    el.querySelectorAll('ellipse, circle').forEach(r => {
+                        r.style.fill = '#ffffff';
+                        r.style.stroke = '#94a3b8';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+                if (cls.includes('bpmn-type-flow')) {
+                    el.querySelectorAll('path, polyline, line').forEach(r => {
+                        r.style.stroke = 'var(--diagram-line)';
+                    });
+                }
+                if (cls.includes('bpmn-type-activity')) {
+                    el.querySelectorAll('rect').forEach(r => {
+                        r.style.fill = '#eff6ff';
+                        r.style.stroke = '#3b82f6';
+                        r.style.strokeWidth = '1.5';
+                    });
+                }
+                if (cls.includes('bpmn-type-container')) {
+                    el.querySelectorAll('rect').forEach(r => {
+                        r.style.fill = '#ffffff';
+                        r.style.stroke = 'var(--diagram-container-stroke)';
+                    });
+                }
+            });
+        }
+
+        // ===== Load Diagram =====
+        async function loadDiagram(fileName) {
+            console.log('[Viewer] loadDiagram: Iniciando com:', fileName);
+            if (!fileName) {
+                console.log('[Viewer] loadDiagram: Nenhum arquivo selecionado');
+                try { bpmnVisualization.graph.clear(); } catch(e) {}
+                emptyStateEl.classList.remove('hidden');
+                updateStatus('Aguardando...', 'idle');
+                diagramLoaded = false;
+                currentStatus = {};
+                return;
+            }
+
+            try {
+                updateStatus(`Carregando ${formatTitle(fileName)}...`, 'active');
+                // Carrega do ENGINE (porta 42042 via proxy)
+                console.log('[Viewer] loadDiagram: Fetching do engine:', `/api/engine/definitions/${encodeURIComponent(fileName)}`);
+                const response = await fetch(`/api/engine/definitions/${encodeURIComponent(fileName)}`);
+                console.log('[Viewer] loadDiagram: Response status:', response.status);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const xml = await response.text();
+                console.log('[Viewer] loadDiagram: XML recebido, tamanho:', xml.length);
+
+                bpmnVisualization.load(xml, {
+                    fit: { type: 'HorizontalVertical', margin: 20 }
+                });
+
+                // Debug: verificar IDs dos elementos no SVG
+                setTimeout(() => {
+                    const svg = document.querySelector('#bpmn-canvas svg');
+                    if (svg) {
+                        const ids = new Set();
+                        svg.querySelectorAll('[id]').forEach(el => ids.add(el.id));
+                        console.log('[Viewer] IDs disponíveis no SVG:', Array.from(ids).slice(0, 20));
+                        
+                        // Verificar se existe Task_SendPing
+                        const sendPing = svg.querySelector('[id*="SendPing"]');
+                        console.log('[Viewer] Elementos com SendPing:', sendPing);
+                    }
+                }, 500);
+
+                console.log('[Viewer] loadDiagram: BPMN visualizacao carregada!');
+
+                applyDarkTheme();
+                requestAnimationFrame(applyDarkTheme);
+                setTimeout(applyDarkTheme, 200);
+                setTimeout(applyDarkTheme, 500);
+
+                emptyStateEl.classList.add('hidden');
+                updateStatus(formatTitle(fileName), 'idle');
+                diagramLoaded = true;
+                currentStatus = {};
+
+                const url = new URL(window.location.href);
+                url.hash = `diagram=${encodeURIComponent(fileName)}`;
+                window.history.replaceState({}, '', url);
+
+            } catch (error) {
+                console.error('[Viewer] loadDiagram: Erro ao carregar diagrama:', error);
+                emptyStateEl.classList.remove('hidden');
+                updateStatus('Erro ao carregar diagrama', 'error');
+                diagramLoaded = false;
+            }
+        }
+
+         async function loadDiagramFromEngine(instanceId) {
+             try {
+                 updateStatus('Carregando diagrama do processo...', 'active');
+                 const response = await fetch(`/api/engine/process/${instanceId}/diagram`);
+                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                 const xml = await response.text();
+
+                 bpmnVisualization.load(xml, {
+                     fit: { type: 'HorizontalVertical', margin: 20 }
+                 });
+
+                 applyDarkTheme();
+                 requestAnimationFrame(applyDarkTheme);
+                 setTimeout(applyDarkTheme, 200);
+
+                 emptyStateEl.classList.add('hidden');
+                 updateStatus('Monitorando...', 'active');
+                 diagramLoaded = true;
+                 currentStatus = {};
+
+                 // Busca o snapshot atual imediatamente para aplicar o status correto
+                 try {
+                     const snapRes = await fetch(`/api/engine/process/${instanceId}/status`);
+                     if (snapRes.ok) {
+                         const snap = await snapRes.json();
+                         if (snap.activities) {
+                             applyActivityStatus(snap.activities);
+                         }
+                     }
+                 } catch (err) {
+                     console.error('[Viewer] Erro ao buscar snapshot inicial:', err);
+                 }
+
+             } catch (error) {
+                 console.error('[Viewer] Erro ao carregar diagrama do engine:', error);
+                 updateStatus('Erro ao conectar com engine', 'error');
+             }
+         }
+
+        // ===== Flow Animation Map =====
+        const INBOUND_FLOWS = {
+            // Ping BPMN
+            'StartEvent_Trigger': [],
+            'Task_SendPing':      ['Flow_1'],
+            'Task_ReceivePing':   ['Flow_2'],
+            'Gateway_Responded':   ['Flow_3'],
+            'Task_ReturnMS':       ['Flow_Yes'],
+            'EndEvent_Online':     ['Flow_4'],
+            'EndEvent_Offline':    ['Flow_No'],
+            // Email BPMN
+            'StartEvent_1':        [],
+            'Activity_0lgejgo':    ['Flow_0pv2c3i'],
+            'Activity_0wa4lu1':    ['Flow_0hge7l7'],
+            'Gateway_07hbhkv':    ['Flow_1suqlhk'],
+            'Activity_0zhzj2f':   ['Flow_0t5kavp'],
+            'Event_1ym6bvz':       ['Flow_1bb5hps'],
+            'Event_0rkw20j':       ['Flow_1pwhszo'],
+        };
+
+        function animateFlows(svg, flowIds, mode) {
+            flowIds.forEach(flowId => {
+                const flowEl = svg.querySelector(`[data-bpmn-id="${flowId}"]`);
+                if (!flowEl) return;
+                flowEl.classList.remove('bpmn-flow-animated', 'bpmn-flow-done');
+                if (mode === 'animate') {
+                    flowEl.classList.add('bpmn-flow-animated');
+                } else if (mode === 'done') {
+                    flowEl.classList.add('bpmn-flow-done');
+                }
+            });
+        }
+
+        function resetAllFlows(svg) {
+            svg.querySelectorAll('.bpmn-flow-animated, .bpmn-flow-done').forEach(el => {
+                el.classList.remove('bpmn-flow-animated', 'bpmn-flow-done');
+            });
+        }
+
+        // ===== Apply Activity Status to BPMN Elements =====
+        const STATUS_CLASSES = [
+            'bpmn-status-active',
+            'bpmn-status-completed',
+            'bpmn-status-error',
+            'bpmn-status-pending',
+            'just-activated'
+        ];
+
+        function applyActivityStatus(activities) {
+            const canvas = document.getElementById('bpmn-canvas');
+            const svg = canvas.querySelector('svg');
+            if (!svg) {
+                console.log('[Viewer] applyActivityStatus: SVG não encontrado');
+                return;
+            }
+
+            console.log('[Viewer] applyActivityStatus: activities=', activities);
+            console.log('[Viewer] applyActivityStatus: svg children count=', svg.children.length);
+
+            // Reset flows on new round (when all become pending)
+            const allPending = Object.values(activities).every(s => s === 'pending');
+            if (allPending) {
+                resetAllFlows(svg);
+            }
+
+            for (const [activityId, status] of Object.entries(activities)) {
+                const elements = svg.querySelectorAll(`[data-bpmn-id="${activityId}"]`);
+                console.log(`[Viewer] applyActivityStatus: ${activityId} -> ${status}, elementos encontrados:`, elements.length);
+                const isNew = currentStatus[activityId] !== status;
+                currentStatus[activityId] = status;
+
+                elements.forEach(el => {
+                    STATUS_CLASSES.forEach(cls => el.classList.remove(cls));
+
+                    if (status === 'active') {
+                        el.classList.add('bpmn-status-active');
+                        if (isNew) el.classList.add('just-activated');
+                        setTimeout(() => el.classList.remove('just-activated'), 500);
+
+                        const inflows = INBOUND_FLOWS[activityId] || [];
+                        animateFlows(svg, inflows, 'animate');
+
+                    } else if (status === 'completed') {
+                        el.classList.add('bpmn-status-completed');
+
+                        const inflows = INBOUND_FLOWS[activityId] || [];
+                        animateFlows(svg, inflows, 'done');
+
+                    } else if (status === 'error') {
+                        el.classList.add('bpmn-status-error');
+
+                    } else {
+                        // pending
+                        el.classList.add('bpmn-status-pending');
+                    }
+                });
+            }
+        }
+
+        // ===== Activity Log =====
+        function updateActivityLog(log) {
+            if (!log || log.length === lastLogCount) return;
+
+            const newEntries = log.slice(lastLogCount);
+            lastLogCount = log.length;
+
+            newEntries.forEach(entry => {
+                const div = document.createElement('div');
+                const icon = entry.event === 'start' ? '▶' : entry.event === 'end' ? '✓' : '✗';
+                const taskName = entry.activityId
+                    .replace('Task_', '')
+                    .replace('Start_', '')
+                    .replace('End_', '')
+                    .replace(/([A-Z])/g, ' $1')
+                    .trim();
+
+                div.className = `log-entry ${entry.event}`;
+                div.innerHTML = `
+                    <span class="log-time">${formatTime(entry.time)}</span>
+                    <span class="log-event">${icon}</span>
+                    <span class="log-name">${taskName}</span>
+                `;
+                activityLogEl.appendChild(div);
+            });
+
+            activityLogEl.scrollTop = activityLogEl.scrollHeight;
+        }
+
+        // ===== Toast Notification =====
+        let toastStartTime = 0;
+        let toastPendingResult = null;
+        const TOAST_MIN_DURATION = 2000; // tempo mínimo que o toast "Carregando..." fica visível
+
+        function showToast(message, type = 'info', duration = 3000) {
+            const existing = document.getElementById('toast-notification');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'toast-notification';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 14px 20px 18px;
+                background: ${type === 'success' ? '#22c55e' : type === 'error' ? '#dc2626' : type === 'loading' ? '#1e293b' : '#3b82f6'};
+                color: white;
+                border-radius: 10px;
+                font-size: 14px;
+                font-weight: 500;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+                z-index: 9999;
+                opacity: 0;
+                transition: opacity 0.4s ease-in-out, background 0.4s ease-in-out;
+                overflow: hidden;
+                min-width: 220px;
+            `;
+
+            // Texto
+            const textEl = document.createElement('div');
+            textEl.textContent = message;
+            toast.appendChild(textEl);
+
+            // Barra de progresso (só aparece no loading)
+            if (type === 'loading') {
+                const barBg = document.createElement('div');
+                barBg.style.cssText = `
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: rgba(255,255,255,0.15);
+                `;
+                const barFill = document.createElement('div');
+                barFill.className = 'toast-progress-bar';
+                barFill.style.cssText = `
+                    height: 100%;
+                    width: 0%;
+                    background: linear-gradient(90deg, #22c55e, #4ade80);
+                    border-radius: 0 2px 2px 0;
+                    transition: width 0.3s ease-out;
+                `;
+                barBg.appendChild(barFill);
+                toast.appendChild(barBg);
+
+                // Anima a barra de 0% a 90% ao longo de TOAST_MIN_DURATION
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        toast.style.opacity = '1';
+                        barFill.style.width = '90%';
+                    });
+                });
+            } else {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        toast.style.opacity = '1';
+                    });
+                });
+            }
+
+            document.body.appendChild(toast);
+            toastStartTime = Date.now();
+            toastPendingResult = null;
+
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 400);
+                }, duration);
+             }
+
+            return toast;
+        }
+
+        function updateToast(message, type, duration = 3000) {
+            const toast = document.getElementById('toast-notification');
+            if (!toast) return showToast(message, type, duration);
+
+            const elapsed = Date.now() - toastStartTime;
+
+            // Se o toast de loading ainda não atingiu o tempo mínimo, agenda o resultado
+            if (elapsed < TOAST_MIN_DURATION) {
+                toastPendingResult = { message, type, duration };
+                return;
+            }
+
+            _applyToastResult(toast, message, type, duration);
+        }
+
+        function _applyToastResult(toast, message, type, duration) {
+            // Completa a barra de progresso antes de mudar
+            const bar = toast.querySelector('.toast-progress-bar');
+            if (bar) {
+                bar.style.transition = 'width 0.3s ease-out';
+                bar.style.width = '100%';
+            }
+
+            setTimeout(() => {
+                toast.style.background = type === 'success' ? '#22c55e' : type === 'error' ? '#dc2626' : '#3b82f6';
+                toast.firstChild.textContent = message;
+
+                // Remove barra de progresso
+                const barBg = toast.querySelector('div:last-child');
+                if (barBg && barBg !== toast.firstChild) {
+                    barBg.style.transition = 'opacity 0.3s';
+                    barBg.style.opacity = '0';
+                    setTimeout(() => barBg.remove(), 300);
+                }
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    setTimeout(() => toast.remove(), 400);
+                }, duration);
+            }, bar ? 350 : 0);
+        }
+
+        // Timer que verifica se há resultado pendente após o tempo mínimo
+        setInterval(() => {
+            if (toastPendingResult) {
+                const toast = document.getElementById('toast-notification');
+                if (toast) {
+                    const result = toastPendingResult;
+                    toastPendingResult = null;
+                    _applyToastResult(toast, result.message, result.type, result.duration);
+                }
+            }
+        }, 100);
+
+        // ===== Polling =====
+        function startPolling(instanceId) {
+            stopPolling();
+            lastLogCount = 0;
+            currentStatus = {};
+            logSectionEl.style.display = 'flex';
+            activityLogEl.innerHTML = '';
+
+            pollingInterval = setInterval(async () => {
+                try {
+                    const res = await fetch(`/api/engine/process/${instanceId}/status`);
+                    if (!res.ok) return;
+
+                    const snap = await res.json();
+
+                    if (diagramLoaded && snap.activities) {
+                        applyActivityStatus(snap.activities);
+                    }
+
+                    if (snap.log) {
+                        updateActivityLog(snap.log);
+                    }
+
+                    updateInstanceCard(instanceId, snap.status);
+
+                    if (snap.status === 'completed') {
+                        updateStatus('[OK] Processo concluído — todas etapas passaram', 'idle');
+                        stopPolling();
+                        updateToast('[OK] Processo concluído com sucesso!', 'success');
+                    } else if (snap.status === 'error') {
+                        updateStatus('[FAIL] Processo com erro', 'error');
+                        stopPolling();
+                        updateToast('[FAIL] Servidor offline — Falha no processo', 'error');
+                    }
+
+                } catch (err) {
+                    console.error('[Polling] Erro:', err);
+                }
+            }, 1000);
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // ===== Instances UI =====
+        function updateInstanceCard(instanceId, status) {
+            const card = document.querySelector(`.instance-card[data-id="${instanceId}"]`);
+            if (!card) return;
+            const dot = card.querySelector('.status-dot');
+            const text = card.querySelector('.inst-status-text');
+            dot.className = `status-dot ${status}`;
+            text.textContent = status === 'running' ? '[RUN] Em execução...' :
+                               status === 'completed' ? '[OK] Concluído' : '[FAIL] Erro';
+        }
+
+        function renderInstanceCard(instance) {
+            const card = document.createElement('div');
+            card.className = 'instance-card';
+            card.dataset.id = instance.instanceId;
+            card.innerHTML = `
+                <div class="inst-id" title="${instance.instanceId}">
+                    🚀 ${instance.processName || formatTitle(instance.bpmnFile)} #${shortId(instance.instanceId)}
+                </div>
+                <div class="inst-status">
+                    <div class="status-dot running"></div>
+                    <span class="inst-status-text">[RUN] Em execução...</span>
+                </div>
+            `;
+            card.addEventListener('click', () => selectInstance(instance));
+            return card;
+        }
+
+        async function selectInstance(instance) {
+            document.querySelectorAll('.instance-card').forEach(c => c.classList.remove('selected'));
+            const card = document.querySelector(`.instance-card[data-id="${instance.instanceId}"]`);
+            if (card) card.classList.add('selected');
+            activeInstanceId = instance.instanceId;
+
+            await loadDiagramFromEngine(instance.instanceId);
+            startPolling(instance.instanceId);
+        }
+
+        // ===== Load Process Buttons Dynamically from Engine =====
+        async function loadProcessButtons() {
+            console.log('[Viewer] loadProcessButtons: Iniciando...');
+            try {
+                const res = await fetch('/api/engine/definitions');
+                console.log('[Viewer] loadProcessButtons: Response status:', res.status);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const files = await res.json();
+                console.log('[Viewer] loadProcessButtons: Arquivos recebidos:', files);
+
+                if (!files || files.length === 0) {
+                    processListEl.innerHTML = '<div style="font-size:0.8rem; color: var(--muted); text-align:center; padding: 8px 0;">Nenhum processo disponível</div>';
+                    return;
+                }
+
+                processListEl.innerHTML = '';
+                files.forEach(fileName => {
+                    const btn = document.createElement('button');
+                    btn.className = 'process-btn';
+                    btn.textContent = formatTitle(fileName);
+                    btn.dataset.file = fileName;
+                    btn.addEventListener('click', () => startProcess(fileName));
+                    processListEl.appendChild(btn);
+                    console.log('[Viewer] loadProcessButtons: Botão criado para:', fileName);
+                });
+            } catch (err) {
+                console.error('[Viewer] loadProcessButtons: Erro ao carregar processos:', err);
+                processListEl.innerHTML = '<div style="font-size:0.8rem; color: var(--red-error); text-align:center; padding: 8px 0;">Engine offline</div>';
+            }
+        }
+
+        async function startProcess(bpmnFile) {
+            console.log('[Viewer] startProcess: Iniciando processo:', bpmnFile);
+            const btn = document.querySelector(`.process-btn[data-file="${bpmnFile}"]`);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '⏳ Iniciando...';
+            }
+
+            showToast('Carregando...', 'loading');
+
+            try {
+                const res = await fetch('/api/engine/process/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bpmnFile })
+                });
+                console.log('[Viewer] startProcess: Response status:', res.status);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const instance = await res.json();
+                console.log('[Viewer] startProcess: Instância criada:', instance);
+
+                const placeholder = instancesListEl.querySelector('div[style]');
+                if (placeholder) placeholder.remove();
+
+                const card = renderInstanceCard(instance);
+                instancesListEl.appendChild(card);
+                await selectInstance(instance);
+
+            } catch (err) {
+                console.error('[Viewer] Erro ao iniciar processo:', err);
+                updateStatus('[FAIL] Engine indisponível — inicie o engine primeiro', 'error');
+                updateToast('[FAIL] Engine indisponível', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = formatTitle(bpmnFile);
+                }
+            }
+        }
+
+        // ===== Diagram Select / Search =====
+        function getDiagramFromUrl() {
+            const hash = window.location.hash.startsWith('#')
+                ? window.location.hash.slice(1)
+                : window.location.hash;
+            return new URLSearchParams(hash).get('diagram');
+        }
+
+        async function init() {
+            console.log('[Viewer] Init: Iniciando...');
+            // Inicia checagem de saúde dos serviços
+            startHealthChecks();
+            try {
+                // Carrega definições do ENGINE (porta 42042 via proxy)
+                console.log('[Viewer] Init: Fetching /api/engine/definitions');
+                const response = await fetch('/api/engine/definitions');
+                console.log('[Viewer] Init: Response status:', response.status);
+                allFiles = await response.json();
+                console.log('[Viewer] Init: Diagramas recebidos:', allFiles);
+                const fromUrl = getDiagramFromUrl();
+                console.log('[Viewer] Init: Diagrama da URL:', fromUrl);
+                applyFilter(fromUrl);
+                if (fromUrl && allFiles.includes(fromUrl)) {
+                    console.log('[Viewer] Init: Carregando diagrama da URL...');
+                    selectEl.value = fromUrl;
+                    await loadDiagram(fromUrl);
+                }
+                // Carrega botões de processos do ENGINE
+                console.log('[Viewer] Init: Carregando botões de processos...');
+                await loadProcessButtons();
+                console.log('[Viewer] Init: Finalizado com sucesso!');
+            } catch (error) {
+                console.error('[Viewer] Erro ao carregar lista:', error);
+                selectEl.innerHTML = '<option value="">Erro ao carregar</option>';
+            }
+        }
+
+        selectEl.addEventListener('change', (e) => {
+            stopPolling();
+            activeInstanceId = null;
+            currentStatus = {};
+            loadDiagram(e.target.value);
+        });
+
+        searchEl.addEventListener('input', () => {
+            const current = selectEl.value;
+            const filtered = applyFilter(current);
+            if (current && !filtered.includes(current)) {
+                selectEl.value = '';
+                loadDiagram('');
+            }
+        });
+
+        // ===== Zoom =====
+        function doZoomIn()  { bpmnVisualization.navigation.zoom('in'); }
+        function doZoomOut() { bpmnVisualization.navigation.zoom('out'); }
+        function doFit()     { bpmnVisualization.navigation.fit({ type: 'HorizontalVertical', margin: 20 }); }
+
+        zoomInBtn.addEventListener('click', doZoomIn);
+        zoomOutBtn.addEventListener('click', doZoomOut);
+        zoomFitBtn.addEventListener('click', doFit);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+            if (e.key === '+' || e.key === '=') doZoomIn();
+            else if (e.key === '-') doZoomOut();
+            else if (e.key === '0') doFit();
+        });
+
+        // ===== Start =====
+        init();
+    </script>
+</body>
+</html>
+
