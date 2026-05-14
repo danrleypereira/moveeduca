@@ -187,6 +187,20 @@ export default {
       action1: "",
       action2: "",
     },
+    udf: {
+      description:
+        "The Centro de Ensino Unificado de Brasília (UDF) is a higher education institution recognized for the quality of its academic training. Move&Educa frequently supports and mentors UDF students, offering internship opportunities, participation in social projects, and development of professional skills.",
+      name: "UDF",
+      action1: "",
+      action2: "",
+    },
+    unb: {
+      description:
+        "The University of Brasília (UnB) is one of the main public universities in Brazil, known for excellence in teaching and research. Move&Educa regularly offers opportunities for UnB students to participate in our projects, receiving mentorship and gaining practical experience in various areas of education.",
+      name: "UnB",
+      action1: "",
+      action2: "",
+    },
   },
   projects: {
     mover: {
@@ -344,9 +358,14 @@ export default {
   },
   roles: {
     president: "President",
+    vice: "Vice President",
+    treasurer: "Treasurer",
+    secretary: "Secretary",
     financialOfficer: "Financial Officer",
     managingOfficer: "Managing Officer",
     generalSecretary: "General Secretary",
+    fiscalCouncil: "Fiscal Council",
+    administrativeCouncil: "Administrative Council",
     member: "Member",
   },
   aside: {
@@ -361,7 +380,7 @@ export default {
   ],
   about: [
     "Welcome to Move&Educa, a movement whose main objective is to raise awareness through education.",
-    "Founded in 2020, Move&Educa operates autonomously and has established partnerships with different segments of society, covering areas such as education, health and social assistance.",
+    "Conceived in 2020, Move&Educa operates autonomously and has established partnerships with different segments of society, covering areas such as education, health and social assistance.",
     "Our vision is to collaborate with other educational institutions in consolidating 21st century skills, as defined by UNESCO. We believe in the power of transformative education and the potential of every human being.",
     "Aligned with our values, we seek unity, political neutrality, respect, internal and external collaboration, integrity, sustainability, innovation and transparency in all our actions and decisions.",
     "Move&Educa, since its conception, emphasizes the importance of information literacy, critical thinking, communication, self-management, global awareness, creativity, financial literacy, resilience, teamwork and ethics.",

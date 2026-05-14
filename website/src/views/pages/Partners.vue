@@ -53,42 +53,6 @@ export default {
     return {
       projects: [
         {
-          name: () => this.getTextFromI18n("$vuetify.partners.abong.name"),
-          description: () =>
-            this.getTextFromI18n("$vuetify.partners.abong.description"),
-          img: {
-            src: require("../../assets/partners/abong.png"),
-            alt: "quadro negro com a fórmula molecular da água (H2O)",
-          },
-          action1: {
-            name: () => this.getTextFromI18n("$vuetify.partners.abong.action1"),
-            path: false,
-          },
-          action2: {
-            name: () => this.getTextFromI18n("$vuetify.partners.abong.action2"),
-            path: "",
-          },
-        },
-        {
-          name: () => this.getTextFromI18n("$vuetify.partners.santos.name"),
-          description: () =>
-            this.getTextFromI18n("$vuetify.partners.santos.description"),
-          img: {
-            src: require("../../assets/partners/santos-inocente-logo.jpg"),
-            alt: "professor e aluna",
-          },
-          action1: {
-            name: () =>
-              this.getTextFromI18n("$vuetify.partners.santos.action1"),
-            path: "",
-          },
-          action2: {
-            name: () =>
-              this.getTextFromI18n("$vuetify.partners.santos.action2"),
-            path: "",
-          },
-        },
-        {
           name: () => this.getTextFromI18n("$vuetify.partners.github.name"),
           description: () =>
             this.getTextFromI18n("$vuetify.partners.github.description"),
@@ -104,23 +68,6 @@ export default {
           action2: {
             name: () =>
               this.getTextFromI18n("$vuetify.partners.github.action2"),
-            path: "",
-          },
-        },
-        {
-          name: () => this.getTextFromI18n("$vuetify.partners.acig.name"),
-          description: () =>
-            this.getTextFromI18n("$vuetify.partners.acig.description"),
-          img: {
-            src: require("../../assets/partners/acig.jpg"),
-            alt: "ábaco",
-          },
-          action1: {
-            name: () => this.getTextFromI18n("$vuetify.partners.acig.action1"),
-            path: "",
-          },
-          action2: {
-            name: () => this.getTextFromI18n("$vuetify.partners.acig.action2"),
             path: "",
           },
         },
@@ -162,57 +109,36 @@ export default {
           },
         },
         {
-          name: () => this.getTextFromI18n("$vuetify.partners.iades.name"),
+          name: () => this.getTextFromI18n("$vuetify.partners.udf.name"),
           description: () =>
-            this.getTextFromI18n("$vuetify.partners.iades.description"),
+            this.getTextFromI18n("$vuetify.partners.udf.description"),
           img: {
-            src: require("../../assets/partners/aides.jpg"),
-            alt: "ábaco",
+            src: "https://i.imgur.com/3UbPvAv.png",
+            alt: "logo UDF",
           },
           action1: {
-            name: () => this.getTextFromI18n("$vuetify.partners.iades.action1"),
+            name: () => this.getTextFromI18n("$vuetify.partners.udf.action1"),
             path: "",
           },
           action2: {
-            name: () => this.getTextFromI18n("$vuetify.partners.iades.action2"),
+            name: () => this.getTextFromI18n("$vuetify.partners.udf.action2"),
             path: "",
           },
         },
         {
-          name: () => this.getTextFromI18n("$vuetify.partners.concurso.name"),
+          name: () => this.getTextFromI18n("$vuetify.partners.unb.name"),
           description: () =>
-            this.getTextFromI18n("$vuetify.partners.concurso.description"),
+            this.getTextFromI18n("$vuetify.partners.unb.description"),
           img: {
-            src: require("../../assets/partners/amigos-do-concurso.jpg"),
-            alt: "Diploma genérico",
+            src: "https://i.imgur.com/4qG0GOn.png",
+            alt: "logo UNB",
           },
           action1: {
-            name: () =>
-              this.getTextFromI18n("$vuetify.partners.concurso.action1"),
+            name: () => this.getTextFromI18n("$vuetify.partners.unb.action1"),
             path: "",
           },
           action2: {
-            name: () =>
-              this.getTextFromI18n("$vuetify.partners.concurso.action2"),
-            path: "",
-          },
-        },
-        {
-          name: () => this.getTextFromI18n("$vuetify.partners.drogas.name"),
-          description: () =>
-            this.getTextFromI18n("$vuetify.partners.drogas.description"),
-          img: {
-            src: require("../../assets/partners/brasil-sem-drogas-logo.png"),
-            alt: "Diploma em rolo e chapéu de graduação",
-          },
-          action1: {
-            name: () =>
-              this.getTextFromI18n("$vuetify.partners.drogas.action1"),
-            path: "",
-          },
-          action2: {
-            name: () =>
-              this.getTextFromI18n("$vuetify.partners.drogas.action2"),
+            name: () => this.getTextFromI18n("$vuetify.partners.unb.action2"),
             path: "",
           },
         },
