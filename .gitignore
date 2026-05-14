@@ -31,6 +31,9 @@ firebase-debug.*.log
 *.sln
 *.sw?
 
+# Estatuto copiado pelo script de build (website/scripts/copy-estatuto.js)
+website/public/docs/Estatuto.pdf
+
 # LaTeX build artifacts
 documentos/*.aux
 documentos/*.log

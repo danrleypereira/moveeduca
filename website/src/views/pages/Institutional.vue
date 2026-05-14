@@ -188,8 +188,8 @@ export default {
     },
     downloadEstatuto() {
       const link = document.createElement('a');
-      link.href = '/docs/Estatuto Move & Educa.pdf';
-      link.download = 'Estatuto Move & Educa.pdf';
+      link.href = '/docs/Estatuto.pdf';
+      link.download = 'Estatuto.pdf';
       link.click();
     }
   },
