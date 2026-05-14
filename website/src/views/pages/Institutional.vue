@@ -27,12 +27,17 @@
         <v-row class="mx-4 my-2">
           <v-col
             v-for="(member, index) in members"
-            :key="member.role + index"
+            :key="member.bioKey + index"
             cols="12"
             :md="index < 2 ? '6' : '4'"
             class="flex-child"
           >
-            <v-card class="mx-auto" max-width="434" tile>
+            <v-card
+              class="mx-auto member-card"
+              max-width="434"
+              tile
+              @click="openProfile(member)"
+            >
               <v-img
                 height="100%"
                 src="https://observatorio3setor.org.br/wp-content/uploads/2020/09/316844-P8VCX3-12.jpg"
@@ -47,7 +52,7 @@
                     <v-list-item color="rgba(0, 4, 0, .4)" dark>
                       <v-list-item-content>
                         <v-list-item-title class="text-h6">
-                          {{ member.name }}
+                          {{ getDisplayName(member) }}
                         </v-list-item-title>
                         <v-list-item-subtitle>
                           {{ member.role() }}
@@ -60,44 +65,38 @@
             </v-card>
           </v-col>
         </v-row>
-        <!-- <v-row>
-          <h1>Diretoria</h1>
-        </v-row>
-        <v-row class="flex-child mx-4 my-2">
-          <v-col cols="12" md="4">
-              <v-sheet
-                class="d-flex"
-                color="red lighten-3"
-                height="250"
-              >
-                <sheet-footer>
-                  #5: (2r x 2c)
-                </sheet-footer>
-              </v-sheet>
-            </v-col>
-            <v-col cols="12" md="4">
-              <v-sheet
-                class="d-flex"
-                color="red lighten-3"
-                height="250"
-              >
-                <sheet-footer>
-                  #5: (2r x 2c)
-                </sheet-footer>
-              </v-sheet>
-            </v-col>
-            <v-col cols="12" md="4">
-              <v-sheet
-                class="d-flex"
-                color="red lighten-3"
-                height="250"
-              >
-                <sheet-footer>
-                  #5: (2r x 2c)
-                </sheet-footer>
-              </v-sheet>
-            </v-col>
-        </v-row> -->
+
+        <v-dialog v-model="profileDialog" transition="dialog-bottom-transition" max-width="600">
+          <v-card v-if="selectedMember">
+            <v-toolbar color="primary" dark>
+              <v-toolbar-title class="text-h6">
+                {{ getDisplayName(selectedMember) }}
+              </v-toolbar-title>
+            </v-toolbar>
+            <v-card-text class="pt-6">
+              <v-row no-gutters align="center">
+                <v-col cols="12" sm="4" class="text-center pb-4 pb-sm-0">
+                  <v-avatar size="140" color="grey lighten-2">
+                    <v-img v-if="selectedMember.profileImg" :src="selectedMember.profileImg"></v-img>
+                  </v-avatar>
+                </v-col>
+                <v-col cols="12" sm="8" class="pl-sm-4">
+                  <div class="text-subtitle-1 font-weight-bold mb-2">
+                    {{ selectedMember.role() }}
+                  </div>
+                  <p class="text-body-2" style="text-align: justify">
+                    {{ getBio(selectedMember) }}
+                  </p>
+                </v-col>
+              </v-row>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+              <v-btn text @click="profileDialog = false">
+                {{ this.$vuetify.lang.t("$vuetify.founders.dialogClose") }}
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-flex>
       <v-flex xs12 md3 lg3 secondary class="scribble-background">
         <Aside></Aside>
@@ -117,56 +116,58 @@ export default {
   },
   data() {
     return {
+      profileDialog: false,
+      selectedMember: null,
       members: [
         {
-          name: "Israel Carvalho",
+          bioKey: "israel",
           role: () => this.getTextFromI18n("$vuetify.roles.president"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          profileImg: require("../../assets/members/israel.jpeg"),
         },
         {
-          name: "Danrley Pereira",
-          role: () => this.getTextFromI18n("$vuetify.roles.treasurer"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
-        },
-        {
-          name: "Polyana Cunha",
+          bioKey: "sebastiao",
           role: () => this.getTextFromI18n("$vuetify.roles.vice"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          profileImg: require("../../assets/members/sebastiao.jpeg"),
         },
         {
-          name: "Carmen Lucia",
-          role: () => this.getTextFromI18n("$vuetify.roles.secretary"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          bioKey: "danrley",
+          role: () => this.getTextFromI18n("$vuetify.roles.financialOfficer"),
+          profileImg: require("../../assets/members/danrley.jpeg"),
         },
         {
-          name: "Carlos Antonio",
-          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          bioKey: "polyana",
+          role: () => this.getTextFromI18n("$vuetify.roles.generalSecretary"),
+          profileImg: require("../../assets/members/polyana.jpeg"),
         },
         {
-          name: "Aulus Diniz",
-          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
-        },
-        {
-          name: "Rita de Cassia",
-          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
-        },
-        {
-          name: "Vanessa Carvalho",
+          bioKey: "marilia",
           role: () => this.getTextFromI18n("$vuetify.roles.administrativeCouncil"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          profileImg: require("../../assets/members/marilia.jpeg"),
         },
         {
-          name: "Milka de Paula",
+          bioKey: "kerlla",
           role: () => this.getTextFromI18n("$vuetify.roles.administrativeCouncil"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          profileImg: require("../../assets/members/kerlla.jpeg"),
         },
         {
-          name: "Paulo Murilo",
+          bioKey: "paulo",
           role: () => this.getTextFromI18n("$vuetify.roles.administrativeCouncil"),
-          profileImg: "https://cdn.vuetifyjs.com/images/profiles/marcus.jpg",
+          profileImg: require("../../assets/members/paulo.jpeg"),
+        },
+        {
+          bioKey: "aulus",
+          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
+          profileImg: require("../../assets/members/aulus.jpeg"),
+        },
+        {
+          bioKey: "carlos",
+          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
+          profileImg: require("../../assets/members/carlos.jpeg"),
+        },
+        {
+          bioKey: "ariana",
+          role: () => this.getTextFromI18n("$vuetify.roles.fiscalCouncil"),
+          profileImg: require("../../assets/members/ariana.jpeg"),
         },
       ],
     };
@@ -174,6 +175,16 @@ export default {
   methods: {
     getTextFromI18n: function (elementName) {
       return this.$vuetify.lang.t(elementName);
+    },
+    getDisplayName(member) {
+      return this.$vuetify.lang.t(`$vuetify.founders.${member.bioKey}.displayName`);
+    },
+    getBio(member) {
+      return this.$vuetify.lang.t(`$vuetify.founders.${member.bioKey}.bio`);
+    },
+    openProfile(member) {
+      this.selectedMember = member;
+      this.profileDialog = true;
     },
     downloadEstatuto() {
       const link = document.createElement('a');
@@ -184,3 +195,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.member-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+</style>

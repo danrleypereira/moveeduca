@@ -368,6 +368,49 @@ export default {
     administrativeCouncil: "Administrative Council",
     member: "Member",
   },
+  founders: {
+    dialogClose: "Close",
+    israel: {
+      displayName: "Israel Carvalho",
+      bio: "With over 29 years of experience, he has worked in electronics, IT, telecommunications, internet, and digital communication. His career includes Tectoy authorized service, Telebrasília S.A, the Brazilian Army, and the Catholic University. He has held executive roles, leading communication, press, branding, and content management. As an entrepreneur, he has focused on Adtech, Social Work, and AutoTech. Committed to his city, he has also contributed to the Government of Brasília. His career reflects dedication to technological evolution, diverse expertise, and resilience."
+    },
+    sebastiao: {
+      displayName: "Prof. Dr. Sebastião Carneiro",
+      bio: "Holds a degree in Physics, a master's in Physics, and a doctorate in Science Education, all from the University of Brasília (UnB). Sebastião started in the Department of Education in 1996. He has worked at CEM 02, CEF 2, and private schools such as Colégio Vitória and Colégio Madre Carmen Salles, and currently also teaches at Uniceplac."
+    },
+    danrley: {
+      displayName: "Danrley Pereira",
+      bio: "Volunteer educator with several years of experience in social projects and itinerant education, IT specialist."
+    },
+    polyana: {
+      displayName: "Polyana Cunha",
+      bio: "Computer Scientist passionate about education and social development."
+    },
+    marilia: {
+      displayName: "Prof. Ms.sc. Marília Pinheiro",
+      bio: "PhD candidate in Bioethics (UnB), Biology teacher, and General Coordinator of Scientific Initiation in basic education. Works at the intersection of Biology, Scientific Initiation, maker culture, and accessible educational technologies, promoting inquiry-based practices and critical thinking in the New Secondary Education context."
+    },
+    kerlla: {
+      displayName: "Prof. Dra. Kerlla Luz",
+      bio: "Experienced in teaching and government projects involving requirements elicitation, definition, documentation, and system proposal evaluation, working as part of development teams. Education professional with a doctorate in Electrical Engineering focused on Control, Automation, and Networks from the University of Brasília (UnB)."
+    },
+    paulo: {
+      displayName: "Paulo Murilo",
+      bio: "Programmer, computer science teacher, and enthusiast of computer science, mathematics, Linux, free software, hacking, and education. Currently works remotely at a CSO focused on education and technology."
+    },
+    aulus: {
+      displayName: "Aulus Diniz",
+      bio: "Software Engineering graduate with projects in education and healthcare, scientific researcher, currently working at UNDP (United Nations)."
+    },
+    carlos: {
+      displayName: "Carlos Donizete",
+      bio: "Former owner and director of a daycare (Escolinha Mundo Disney) for many years."
+    },
+    ariana: {
+      displayName: "Ariana",
+      bio: "Worked for many years in banking, holds a degree in Business Administration, and has experience in accounting."
+    },
+  },
   aside: {
     donationButton: "Support Us",
     socialMedia: "Social Media",

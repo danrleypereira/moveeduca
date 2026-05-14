@@ -357,15 +357,58 @@ export default {
   },
   roles: {
     president: "Presidente",
-    vice: "Vice",
+    vice: "Vice-Presidente",
     treasurer: "Tesoureiro",
     secretary: "Secretária",
     financialOfficer: "Diretor Financeiro",
     managingOfficer: "Diretor Administrativo",
-    generalSecretary: "Secretário Geral",
+    generalSecretary: "Secretária Geral",
     fiscalCouncil: "Conselho Fiscal",
-    administrativeCouncil: "Conselho Administrativo",
+    administrativeCouncil: "Conselho de Administração",
     member: "Membro",
+  },
+  founders: {
+    dialogClose: "Fechar",
+    israel: {
+      displayName: "Israel Carvalho",
+      bio: "Com mais de 29 anos de experiência, atuou nos setores de eletrônica, informática, telecomunicação, internet e comunicação digital. Sua trajetória inclui passagens pela autorizada Tectoy, Telebrasília S.A, Exército Brasileiro e Universidade Católica. Desempenhou funções executivas, liderando áreas como comunicação, assessoria de imprensa, branding e gestão de conteúdo. No empreendedorismo, focou em Adtech, Social Work e AutoTech. Comprometido com sua cidade, também contribuiu para o Governo de Brasília. Sua trajetória reflete dedicação à evolução tecnológica, expertise diversificada e resiliência."
+    },
+    sebastiao: {
+      displayName: "Prof. Dr. Sebastião Carneiro",
+      bio: "Possui formação em Física, mestrado em Física e doutorado em Educação para a Ciência, todos pela Universidade de Brasília (UnB). Sebastião iniciou na secretaria de educação em 1996. Já atuou profissionalmente no CEM 02, CEF 2 e em redes particulares como Colégio Vitória e Colégio Madre Carmen Salles, atualmente também atua na Uniceplac."
+    },
+    danrley: {
+      displayName: "Danrley Pereira",
+      bio: "Educador voluntário com vários anos de experiência em projetos sociais e educação itinerante, especialista em TI."
+    },
+    polyana: {
+      displayName: "Polyana Cunha",
+      bio: "Cientista da Computação apaixonada por educação e em construção social."
+    },
+    marilia: {
+      displayName: "Prof. Ms.sc. Marília Pinheiro",
+      bio: "Doutoranda em Bioética (UnB), professora de Biologia e Coordenadora Geral da Iniciação Científica na educação básica. Atua na integração entre Biologia, Iniciação Científica, cultura maker e tecnologias educacionais acessíveis, promovendo práticas investigativas e pensamento crítico no contexto do Novo Ensino Médio."
+    },
+    kerlla: {
+      displayName: "Prof. Dra. Kerlla Luz",
+      bio: "Experiência com ensino e projetos para o governo de captura de requisitos, definição de requisitos, elaboração de documentação de requisitos e avaliação de propostas de sistemas, atuando como parte de uma equipe de desenvolvimento. Profissional de educação com doutorado em Engenharia Elétrica com foco em Sistemas de Controle e Automação - Redes pela Universidade de Brasília (UnB)."
+    },
+    paulo: {
+      displayName: "Paulo Murilo",
+      bio: "Programador, professor de informática, entusiasta da ciência da computação, matemática, Linux, software livre, hacking e educação. Atualmente trabalha remotamente em uma OSC de educação e tecnologia."
+    },
+    aulus: {
+      displayName: "Aulus Diniz",
+      bio: "Bacharel em Engenharia de Software com projetos na área de educação e saúde, pesquisador científico, atualmente trabalha no PNUD da ONU."
+    },
+    carlos: {
+      displayName: "Carlos Donizete",
+      bio: "Foi dono e diretor de creche por vários anos (Escolinha Mundo Disney)."
+    },
+    ariana: {
+      displayName: "Ariana",
+      bio: "Trabalhou por vários anos em banco, tem formação em administração e experiência em contabilidade."
+    },
   },
   aside: {
     donationButton: "Apoie essa Causa",
