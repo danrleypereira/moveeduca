@@ -1,0 +1,28 @@
+# Dependabot version updates are intentionally disabled.
+# The team manages dependency upgrades manually to avoid noisy or breaking auto-PRs
+# (especially for Vue 2 / webpack 4 in website and the early Maestro prototype).
+#
+# To re-enable, set open-pull-requests-limit above 0 or remove this file and
+# configure updates in GitHub repository settings.
+#
+# Security alerts can still be reviewed under: Settings → Security → Dependabot alerts.
+
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /website
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: npm
+    directory: /website/functions
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: npm
+    directory: /maestro
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 0
