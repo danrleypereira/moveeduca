@@ -1,5 +1,6 @@
 # General
 .DS_Store
+.firebase/
 
 # Dependencies
 **/node_modules/
