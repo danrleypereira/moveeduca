@@ -15,7 +15,7 @@
     "bpmn-engine": "^25.0.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "nodemailer": "^6.9.16"
+    "nodemailer": "^9.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
